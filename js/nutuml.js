@@ -286,7 +286,13 @@ var NutUml;
     }
     NutUml = function (el) {
         this.el = el;
-        this.context = el.getContext("2d");
+        el.innerHTML="";
+        var canvas = document.createElement("canvas");
+        this.context = canvas.getContext("2d");
+        var img = document.createElement("img");
+        el.appendChild(img);
+        this.img = img;
+        this.canvas = canvas;
         this.tokens = [];
     };
     
@@ -317,12 +323,12 @@ var NutUml;
         _calcHeaderXY(secObj);
         _calcLinesXY(secObj);
 
-        this.el.width = secObj.width;
-        this.el.height = secObj.height;
+        this.canvas.width = secObj.width;
+        this.canvas.height = secObj.height;
 
         _drawHeader(ctx,secObj);
         _drawLines(ctx,secObj);
-
+        this.img.src=this.canvas.toDataURL();
         return "";
     };
     function isWordChar(c){
