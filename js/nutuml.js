@@ -23,7 +23,11 @@ var NutUml;
     const TYPE_OPERATOR = 4;
     const TYPE_SEPARATORS = 5;
 
-    const reservedWords = ['if', 'int', 'for', 'while', 'do', 'return', 'break', 'continue'];
+    const ACTOR_WIDTH = 34;
+
+
+    const reservedWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
+    const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
     const dashOperators = ['<--', '-->'];
@@ -61,16 +65,28 @@ var NutUml;
         ctx.stroke()
         ctx.restore()
     }
-    function _calcHeaderSize(context,header){
-        context.font = font;
-        var len = header.length;
+    function _oneHeaderSize(ctx,item){
         var pw = paddingWidth;
         var ph = paddingHeight;
+        item.width = ctx.measureText(item.title).width + pw*2;
+        item.height = fontSize + ph*2;
+        if("actor"==item.type){
+            item.width = ctx.measureText(item.title).width;
+            item.height += 54;
+            if(item.width<ACTOR_WIDTH){
+                item.width = ACTOR_WIDTH;
+            }
+        }
+        
+    }
+    function _calcHeaderSize(ctx,header){
+        ctx.font = font;
+        var len = header.length;
+        
 
         for (i = 0; i < len; i++) {
             var item = header[i];
-            item.width = context.measureText(item.title).width + pw*2;
-            item.height = fontSize + ph*2;
+            _oneHeaderSize(ctx,item);
         }
     }
     function _calcLineSize(context,lines){
@@ -125,7 +141,7 @@ var NutUml;
             }
             item.x = preItem.x + span;
             
-            item.y = pagePadding;
+            item.y = pagePadding + maxHeight - item.height;
             item.lineX = item.x + item.width/2;
             item.lineY = item.y + item.height;
         }
@@ -179,14 +195,21 @@ var NutUml;
         ctx.fill()
         ctx.restore()
     }
+    function _drawOneHeader(ctx,item){
+        if(item.type=="actor"){
+            _drawActor(ctx,item);
+        }else{
+            _rectangle(ctx,item);
+        }
+    }
     function _drawHeader(ctx,obj){
         var len = obj.header.length;
         for(var i=0;i<len;i++){
             var item = obj.header[i];
-            _rectangle(ctx,item);
+            _drawOneHeader(ctx,item);
             var bottom = _copyObj(item);
             bottom.y = item.y + obj.innerHeight + lineHeight + item.height;
-            _rectangle(ctx,bottom);
+            _drawOneHeader(ctx,bottom);
             _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
         }
     }
@@ -234,6 +257,40 @@ var NutUml;
         ctx.fill();
         ctx.restore(); 
     }
+    function _drawActor(ctx,item){
+        var x = item.x;
+        var y = item.y;
+        if(item.width>ACTOR_WIDTH){
+            x = item.x + (item.width-ACTOR_WIDTH)/2;
+        }
+        ctx.save()
+        ctx.beginPath();
+        ctx.arc(x+15,y+8,8,0,2*Math.PI);
+        ctx.fill();
+        ctx.moveTo(x+15,y+16);
+        ctx.lineTo(x+15,y+40);
+        ctx.moveTo(x+2,y+22);
+        ctx.lineTo(x+28,y+22);
+        ctx.moveTo(x,y+54);
+        ctx.lineTo(x+15,y+40);
+        ctx.lineTo(x+30,y+54)
+        ctx.stroke()
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath();
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        x=item.x;
+        var textWidth = ctx.measureText(item.title).width;
+        if(textWidth<ACTOR_WIDTH){
+            x+= (ACTOR_WIDTH-textWidth)/2;
+        }
+        ctx.fillText(item.title,x,fontSize+54+item.y+paddingHeight-1);
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
+    }
     function _getObj(tokens){
         var obj = {
             header : [],
@@ -245,6 +302,19 @@ var NutUml;
         var headerArr = [];
         while(cur<len){
             var item = tokens[cur++];
+            if(item.type==TYPE_RESERVED){
+                if(participantWords.includes(item.value)){
+                    var opItem = tokens[cur++];
+                    if(opItem.type == TYPE_WORD){
+                        obj.header.push({ 
+                            name:opItem.value, 
+                            title:opItem.value, 
+                            type:item.value 
+                        });
+                        headerArr.push(opItem.value);
+                    }
+                }
+            }
             if(item.type==TYPE_WORD){
                 var lineItem = {
                     from:"",
@@ -254,15 +324,27 @@ var NutUml;
                 }
                 
                 if(!headerArr.includes(item.value)){
-                    obj.header.push({name:item.value,title:item.value});
+                    obj.header.push({
+                        name: item.value,
+                        title: item.value,
+                        type: "participant"
+                    });
                     headerArr.push(item.value);
                 }
+                if(cur>=len){
+                    break;
+                }
                 var opItem = tokens[cur++];
+                
                 lineItem.operator = opItem.value;
 
                 var toItem = tokens[cur++];
                 if(!headerArr.includes(toItem.value)){
-                    obj.header.push({name:toItem.value,title:toItem.value});
+                    obj.header.push({
+                        name:toItem.value,
+                        title:toItem.value,
+                        type: "participant"
+                    });
                     headerArr.push(toItem.value);
                 }
                 if(fromOperators.includes(opItem.value)){
