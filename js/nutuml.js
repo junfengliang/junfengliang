@@ -22,11 +22,12 @@ var NutUml;
     const TYPE_MESSAGE = 3;
     const TYPE_OPERATOR = 4;
     const TYPE_SEPARATORS = 5;
+    const TYPE_STRING = 6;
 
     const ACTOR_WIDTH = 34;
 
 
-    const reservedWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
+    const reservedWords = ['as', 'participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
@@ -57,21 +58,17 @@ var NutUml;
         ctx.fill();
         ctx.restore();
 
-        ctx.save();
-        ctx.font= font;
-        ctx.fillStyle = textFillStyle;
-        ctx.fillText(item.title,item.x+paddingWidth,fontSize+item.y+paddingHeight-1);
-        ctx.fill()
-        ctx.stroke()
-        ctx.restore()
+        _drawText(ctx,item.x+paddingWidth,item.y,item.title,true)
+        
     }
     function _oneHeaderSize(ctx,item){
         var pw = paddingWidth;
         var ph = paddingHeight;
-        item.width = ctx.measureText(item.title).width + pw*2;
-        item.height = fontSize + ph*2;
+        var obj = _measureText(ctx,item.title);
+        item.width = obj.width + pw*2;
+        item.height = obj.height;
         if("actor"==item.type){
-            item.width = ctx.measureText(item.title).width;
+            item.width = obj.width;
             item.height += 54;
             if(item.width<ACTOR_WIDTH){
                 item.width = ACTOR_WIDTH;
@@ -89,15 +86,16 @@ var NutUml;
             _oneHeaderSize(ctx,item);
         }
     }
-    function _calcLineSize(context,lines){
-        context.font = font;
+    function _calcLineSize(ctx,lines){
+        ctx.font = font;
         var len = lines.length;
         var pw = paddingWidth;
 
         for (i = 0; i < len; i++) {
             var item = lines[i];
-            item.width = context.measureText(item.message).width + pw*2;
-            item.height = fontSize + linePadding;
+            var obj = _measureText(ctx,item.message);
+            item.width = obj.width + pw*2;
+            item.height = obj.height + linePadding;
         }
     }
     function _calcHeaderXY(obj){
@@ -105,7 +103,7 @@ var NutUml;
         var len = obj.header.length;
         var arr = [];
         var minWidth = 100;
-        var maxHeight = 0;
+        obj.maxHeaderHeight = 0;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             var t = item.from + "_" + item.to;
@@ -119,14 +117,14 @@ var NutUml;
             obj.innerHeight += item.height
         }
         for(var i=0;i<len;i++){
-            maxHeight = Math.max(obj.header[i].height,maxHeight);
+            obj.maxHeaderHeight = Math.max(obj.header[i].height,obj.maxHeaderHeight);
         }
         for(var i=1;i<len;i++){
             var item = obj.header[i];
             var preItem = obj.header[i-1];
             if(i==1){
                 preItem.x = pagePadding;
-                preItem.y = pagePadding;
+                preItem.y = pagePadding + obj.maxHeaderHeight - preItem.height;
                 preItem.lineX = preItem.x + preItem.width/2;
                 preItem.lineY = preItem.y + preItem.height;
             }
@@ -141,15 +139,16 @@ var NutUml;
             }
             item.x = preItem.x + span;
             
-            item.y = pagePadding + maxHeight - item.height;
+            item.y = pagePadding + obj.maxHeaderHeight - item.height;
             item.lineX = item.x + item.width/2;
             item.lineY = item.y + item.height;
         }
-        obj.height = Math.ceil(lineHeight + obj.innerHeight + maxHeight*2 + pagePadding*2);
+        obj.height = Math.ceil(lineHeight + obj.innerHeight + obj.maxHeaderHeight*2 + pagePadding*2);
         obj.width = Math.ceil(obj.header[len-1].x + obj.header[len-1].width + pagePadding) ; 
     }
     function _calcLinesXY(obj){
-        var curY = pagePadding + obj.header[0].height;
+        
+        var curY = pagePadding + obj.maxHeaderHeight;
         for(var j=0;j<obj.lines.length;j++){
             curY +=lineHeight;
             var item = obj.lines[j];
@@ -291,6 +290,36 @@ var NutUml;
         ctx.stroke()
         ctx.restore()
     }
+    function _measureText(ctx,title){
+        var obj = { width: 0, height: 0};
+        var arr = title.split("\n");
+        arr.forEach(function(item){
+            obj.width = Math.max(obj.width,ctx.measureText(item).width)
+        })
+        obj.height = arr.length * (fontSize+paddingHeight) + paddingHeight;
+        return obj;
+    }
+    function _drawText(ctx,x,y,title,center){
+        ctx.save()
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+
+        var arr = title.split("\n");
+        var obj =null;
+        if(center){
+            obj = _measureText(ctx,title);
+        }
+        for(var i=0;i<arr.length;i++){
+            var lineX = x;
+            var lineY = y + i * (fontSize+paddingHeight);
+            if(center){
+                lineX = x + (obj.width - ctx.measureText(arr[i]).width)/2;
+            }
+            ctx.fillText(arr[i],lineX,fontSize+ lineY +paddingHeight-1);
+        }
+        ctx.fill()
+        ctx.restore()
+    }
     function _getObj(tokens){
         var obj = {
             header : [],
@@ -315,7 +344,7 @@ var NutUml;
                     }
                 }
             }
-            if(item.type==TYPE_WORD){
+            if(item.type==TYPE_WORD || item.type==TYPE_STRING){
                 var lineItem = {
                     from:"",
                     to: "",
@@ -339,28 +368,47 @@ var NutUml;
                 lineItem.operator = opItem.value;
 
                 var toItem = tokens[cur++];
-                if(!headerArr.includes(toItem.value)){
-                    obj.header.push({
-                        name:toItem.value,
-                        title:toItem.value,
-                        type: "participant"
-                    });
-                    headerArr.push(toItem.value);
+                var toHeader = {
+                    name:toItem.value,
+                    title:toItem.value,
+                    type: "participant"
+                }
+                if(cur<len){
+                    var sepItem = tokens[cur];
+                    if(sepItem.type == TYPE_RESERVED){
+                        if("as"==sepItem.value){
+                            cur++
+                            var wordItem = tokens[cur++];
+                            if(wordItem.type == TYPE_WORD){
+                                toHeader.name = wordItem.value
+                            }else if(wordItem.type==TYPE_STRING){
+                                toHeader.title = wordItem.value
+                            }
+                            if(cur<len){
+                                sepItem = tokens[cur];
+                            }
+                        }
+                    }
+                    if(sepItem.type==TYPE_SEPARATORS){
+                        cur++;
+                        var messageItem = tokens[cur];
+                        if(messageItem.type == TYPE_MESSAGE){
+                            lineItem.message = messageItem.value
+                        }
+                    }
+                }
+                if(!headerArr.includes(toHeader.name)){
+                    obj.header.push(toHeader);
+                    headerArr.push(toHeader.name);
                 }
                 if(fromOperators.includes(opItem.value)){
                     lineItem.from = item.value;
-                    lineItem.to = toItem.value;
+                    lineItem.to = toHeader.name;
                 }else{
-                    lineItem.from = toItem.value;
+                    lineItem.from = toHeader.name;
                     lineItem.to = item.value;
                 }
-                var sepItem = tokens[cur++];
-                if(sepItem.type==TYPE_SEPARATORS){
-                    var messageItem = tokens[cur];
-                    if(messageItem.type == TYPE_MESSAGE){
-                        lineItem.message = messageItem.value
-                    }
-                }
+                
                 obj.lines.push(lineItem);
             }
         }
@@ -388,7 +436,7 @@ var NutUml;
             height:0
         };
         var ana = this.analysis(text);
-        
+        console.log(ana);
         if(ana instanceof Array){
             this.tokens = ana;
         }else{
@@ -468,6 +516,7 @@ var NutUml;
                 while(cur < str.length && !newLines.includes(str[cur])) {
                     word += str[cur++];
                 }
+                word = word.replace("\\n","\n")
                 tokens.push({
                     type: TYPE_MESSAGE,
                     value: word,
@@ -481,7 +530,20 @@ var NutUml;
                     type: TYPE_OPERATOR,
                     value: operator,
                 }); // 存储运算符                        
-            } else {
+            } else if('"'==str[cur]){
+                let operator = "";
+                cur++;
+                while(cur < str.length) {
+                    var c = str[cur++];
+                    if('"'==c)break;
+                    operator += c;
+                }
+                operator = operator.replace("\\n","\n")
+                tokens.push({
+                    type: TYPE_STRING,
+                    value: operator,
+                });
+            }else {
                 return "包含非法字符：" + str[cur];
             }
 
