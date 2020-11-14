@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
-<script src="../js/nutuml.js"></script>
+<script src="js/nutuml.js"></script>
 <style>
 @media (min-width: 768px ) {
   .row {
@@ -89,36 +89,6 @@
         <div ref="canvas4" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h4>自动编号</h4>
-            <p>我们可以通过autonumber请消息自动编号</p>
-            <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style="width:100%; height:200px;" placeholder="请输入内容" v-model="textarea5"></textarea>
-        </div>
-        <div ref="canvas5" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h4>分隔符</h4>
-            <p>我们可以通过 == 关键词来将你的图表分割成多个步骤。</p>
-            <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style="width:100%; height:200px;" placeholder="请输入内容" v-model="textarea6"></textarea>
-        </div>
-        <div ref="canvas6" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h4>移除脚注</h4>
-            <p>使用hide footbox关键字移除脚注。</p>
-            <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style="width:100%; height:200px;" placeholder="请输入内容" v-model="textarea7"></textarea>
-        </div>
-        <div ref="canvas7" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
     <footer>
         <p>&copy; 2020 NutUml</p>
     </footer>
@@ -151,14 +121,7 @@ new Vue({
                     '"Bob()" -> "This is very\\nlong" as Long\n' +
                     'Long --> "Bob()" : ok',
         textarea4: 'Alice->Alice: This is a signal to self.\\nIt also demonstrates\\nmultiline \\ntext',
-        textarea5: 'autonumber\nBob -> Alice : Authentication Request\nBob <- Alice : Authentication Response',
-        textarea6: '== Initialization ==\n'
-                   + 'Alice -> Bob: Authentication Request\n'
-                   + 'Bob --> Alice: Authentication Response\n'
-                   + '== Repetition ==\n'
-                   + 'Alice -> Bob: Another authentication Request\n'
-                   + 'Alice <-- Bob: another authentication Response',
-        textarea7: 'hide footbox\nAlice -> Bob: Authentication Request\nBob --> Alice: Authentication Response'
+        textarea5: '',
     },
     watch: {
         textarea: function(){
@@ -175,15 +138,6 @@ new Vue({
         },
         textarea4: function(){
             this.draw(this.$refs.canvas4,this.textarea4);
-        },
-        textarea5: function(){
-            this.draw(this.$refs.canvas5,this.textarea5);
-        },
-        textarea6: function(){
-            this.draw(this.$refs.canvas6,this.textarea6);
-        },
-        textarea7: function(){
-            this.draw(this.$refs.canvas7,this.textarea7);
         }
     },
     mounted: function() {
@@ -192,9 +146,6 @@ new Vue({
         this.draw(this.$refs.canvas2,this.textarea2);
         this.draw(this.$refs.canvas3,this.textarea3);
         this.draw(this.$refs.canvas4,this.textarea4);
-        this.draw(this.$refs.canvas5,this.textarea5);
-        this.draw(this.$refs.canvas6,this.textarea6);
-        this.draw(this.$refs.canvas7,this.textarea7);
 
     },
     methods: {

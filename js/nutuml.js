@@ -14,8 +14,10 @@ var NutUml;
     var lineHeight = fontSize + linePadding;
     var shadowColor = "#9A6A7A";
     var fillStyle = "#FEFECE";
+    var fillStyleWhite = "#ffffff";
     var textFillStyle = "#333";
     var strokeStyle = "#A80036";
+    var toSelfHeight = 13;
 
     const TYPE_RESERVED = 1;
     const TYPE_WORD = 2;
@@ -23,11 +25,12 @@ var NutUml;
     const TYPE_OPERATOR = 4;
     const TYPE_SEPARATORS = 5;
     const TYPE_STRING = 6;
+    const TYPE_SEPARATE_LINE = 7;
 
     const ACTOR_WIDTH = 34;
 
 
-    const reservedWords = ['as', 'participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
+    const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
@@ -96,6 +99,9 @@ var NutUml;
             var obj = _measureText(ctx,item.message);
             item.width = obj.width + pw*2;
             item.height = obj.height + linePadding;
+            if(item.from == item.to && item.type == "line"){
+                item.height += toSelfHeight;
+            }
         }
     }
     function _calcHeaderXY(obj){
@@ -119,15 +125,16 @@ var NutUml;
         for(var i=0;i<len;i++){
             obj.maxHeaderHeight = Math.max(obj.header[i].height,obj.maxHeaderHeight);
         }
-        for(var i=1;i<len;i++){
+        for(var i=0;i<len;i++){
             var item = obj.header[i];
-            var preItem = obj.header[i-1];
-            if(i==1){
-                preItem.x = pagePadding;
-                preItem.y = pagePadding + obj.maxHeaderHeight - preItem.height;
-                preItem.lineX = preItem.x + preItem.width/2;
-                preItem.lineY = preItem.y + preItem.height;
+            if(i==0){
+                item.x = pagePadding;
+                item.y = pagePadding + obj.maxHeaderHeight - item.height;
+                item.lineX = item.x + item.width/2;
+                item.lineY = item.y + item.height;
+                continue
             }
+            var preItem = obj.header[i-1];
             var val = preItem.name + "_" + item.name;
             var val2 = item.name + "_" + preItem.name;
             var span = minWidth;
@@ -144,14 +151,24 @@ var NutUml;
             item.lineY = item.y + item.height;
         }
         obj.height = Math.ceil(lineHeight + obj.innerHeight + obj.maxHeaderHeight*2 + pagePadding*2);
-        obj.width = Math.ceil(obj.header[len-1].x + obj.header[len-1].width + pagePadding) ; 
+        var lastWidth = obj.header[len-1].width;
+        var lastLineWidth = arr[obj.header[len-1].name + "_" + obj.header[len-1].name];
+        if(lastLineWidth && lastLineWidth>lastWidth/2){
+            lastWidth = lastWidth/2 + lastLineWidth;
+        }
+        obj.width = Math.ceil(obj.header[len-1].x + lastWidth + pagePadding) ; 
     }
     function _calcLinesXY(obj){
         
         var curY = pagePadding + obj.maxHeaderHeight;
         for(var j=0;j<obj.lines.length;j++){
-            curY +=lineHeight;
             var item = obj.lines[j];
+            curY +=item.height;
+            item.y = curY;
+            item.toY = curY;
+            if(item.type !=="line"){
+                continue;
+            }
             var fromHeader, toHeader;
             for(var k=0;k<obj.header.length;k++){
                 if(obj.header[k].name == item.from){
@@ -162,9 +179,7 @@ var NutUml;
                 }
             }
             item.x = fromHeader.lineX;
-            item.y = curY;
             item.toX = toHeader.lineX;
-            item.toY = curY;
         }
 
     }
@@ -208,7 +223,9 @@ var NutUml;
             _drawOneHeader(ctx,item);
             var bottom = _copyObj(item);
             bottom.y = item.y + obj.innerHeight + lineHeight + item.height;
-            _drawOneHeader(ctx,bottom);
+            if(!obj.hideFootbox){
+                _drawOneHeader(ctx,bottom);
+            }
             _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
         }
     }
@@ -216,17 +233,83 @@ var NutUml;
         var len = obj.lines.length;
         for(var i=0;i<len;i++){
             var item = obj.lines[i];
-            _line(ctx,item);
+            if(item.type=="line"){
+                _line(ctx,item,obj);
+            }else if(item.type="separate_line"){
+                _separateLine(ctx,item,obj)
+            }
         }
     }
-    function _line(ctx,item){
-        ctx.save()
-        ctx.beginPath()
-        ctx.font= font;
-        ctx.fillText(item.message,Math.min(item.x,item.toX) + 10,item.y-5);
-        ctx.fill();
-        ctx.restore()
+    function _separateLine(ctx,item,obj){
+        ctx.save(); 
+        ctx.beginPath(); 
+        var midY = item.y -item.height /2 + paddingHeight;
+        var boxX = obj.width/2 - item.width/2;
+        var textObj = _measureText(ctx,item.message);
+        var boxY = midY - textObj.height/2;
+        var boxHeight = textObj.height;
 
+        var line1 = midY-2;
+        var line2 = midY +2;
+        ctx.fillStyle= fillStyleWhite;
+        ctx.fillRect(0, line1, obj.width, 4);
+        ctx.fill();
+
+        ctx.moveTo(0, line1); 
+        ctx.lineTo(obj.width, line1); 
+        ctx.moveTo(obj.width,line2);
+        ctx.lineTo(0, line2); 
+        ctx.stroke(); 
+        ctx.beginPath(); 
+
+        
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        ctx.fillStyle= fillStyleWhite;
+        ctx.fillRect(boxX, boxY, item.width, boxHeight);
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+
+        ctx.fillRect(boxX, boxY, item.width, boxHeight);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(boxX, boxY, item.width, boxHeight);
+
+        ctx.stroke(); 
+        ctx.restore(); 
+
+        _drawText(ctx,boxX+paddingWidth,boxY-2, item.message);
+
+    }
+    function _drawToSelf(ctx,x,y){
+        ctx.save(); 
+        ctx.beginPath(); 
+        ctx.moveTo(x, y); 
+        ctx.lineTo(x + 40, y); 
+        ctx.lineTo(x+40, y+13); 
+        
+        ctx.lineTo(x, y+13); 
+        ctx.stroke(); 
+        ctx.restore(); 
+        _drawArrow(ctx,x,y+13,true);
+
+    }
+    function _line(ctx,item,obj){
+        var message = item.message;
+        if(obj.autonumber){
+            message = item.number + " " + message;
+        }
+    
+        _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-fontSize-paddingHeight*2, message);
+        if(item.from==item.to){
+            var obj = _measureText(ctx,item.message);
+            _drawToSelf(ctx,item.x,item.y + obj.height - lineHeight+paddingHeight)
+            return;
+        }
         if(dashOperators.includes(item.operator)){
             _dashedLine(ctx,item.x, item.y, item.toX, item.toY);
         }else{
@@ -324,14 +407,29 @@ var NutUml;
         var obj = {
             header : [],
             lines : [],
-            innerHeight:0
+            innerHeight:0,
+            autonumber:false,
+            hideFootbox:false
         };
         var len = tokens.length;
         var cur =0;
         var headerArr = [];
+        var number = 1;
         while(cur<len){
             var item = tokens[cur++];
             if(item.type==TYPE_RESERVED){
+                if("autonumber"==item.value){
+                    obj.autonumber = true
+                    continue
+                }
+                if("hide"==item.value){
+                    var hideItem = tokens[cur];
+                    if("footbox"==hideItem.value){
+                        obj.hideFootbox = true
+                        cur++
+                    }
+                    continue
+                }
                 if(participantWords.includes(item.value)){
                     var opItem = tokens[cur++];
                     if(opItem.type == TYPE_WORD){
@@ -344,12 +442,20 @@ var NutUml;
                     }
                 }
             }
-            if(item.type==TYPE_WORD || item.type==TYPE_STRING){
+            if(item.type==TYPE_WORD || item.type==TYPE_STRING|| item.type==TYPE_SEPARATE_LINE){
                 var lineItem = {
                     from:"",
                     to: "",
                     message: "",
-                    operator: ""
+                    operator: "",
+                    number:0,
+                    type:"line"
+                }
+                if(item.type==TYPE_SEPARATE_LINE){
+                    lineItem.type = "separate_line"
+                    lineItem.message = item.value;
+                    obj.lines.push(lineItem);
+                    continue
                 }
                 
                 if(!headerArr.includes(item.value)){
@@ -364,9 +470,10 @@ var NutUml;
                     break;
                 }
                 var opItem = tokens[cur++];
-                
+                if(cur>=len){
+                    break;
+                }
                 lineItem.operator = opItem.value;
-
                 var toItem = tokens[cur++];
                 var toHeader = {
                     name:toItem.value,
@@ -408,7 +515,7 @@ var NutUml;
                     lineItem.from = toHeader.name;
                     lineItem.to = item.value;
                 }
-                
+                lineItem.number=number++;
                 obj.lines.push(lineItem);
             }
         }
@@ -436,7 +543,7 @@ var NutUml;
             height:0
         };
         var ana = this.analysis(text);
-        console.log(ana);
+        console.log(ana)
         if(ana instanceof Array){
             this.tokens = ana;
         }else{
@@ -511,12 +618,16 @@ var NutUml;
                 }); // 存储分隔符并将cur向右移动
                 
                 let word = "";
+                while(cur < str.length && " " == str[cur]){ 
+                    cur++;
+                }
+
                 // 测试下一位字符,如果是换行进入下一次循环
                 // 如果不是则继续读字符,并将cur向右移动
                 while(cur < str.length && !newLines.includes(str[cur])) {
                     word += str[cur++];
                 }
-                word = word.replace("\\n","\n")
+                word = word.replace(/\\n/g,"\n")
                 tokens.push({
                     type: TYPE_MESSAGE,
                     value: word,
@@ -543,6 +654,26 @@ var NutUml;
                     type: TYPE_STRING,
                     value: operator,
                 });
+            } else if('='==str[cur]){
+                cur++;
+                if('='==str[cur]){
+                    var message = "";
+                    cur++
+                    while(cur < str.length) {
+                        var c = str[cur++];
+                        if('='==c && cur<str.length && str[cur]=='='){
+                            cur++;
+                            break;
+                        }
+                        message += c;
+                    }
+                    tokens.push({
+                        type: TYPE_SEPARATE_LINE,
+                        value: message,
+                    });
+                }else{
+                    return "syntax error"
+                }
             }else {
                 return "包含非法字符：" + str[cur];
             }
