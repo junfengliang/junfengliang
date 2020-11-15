@@ -19,6 +19,9 @@ var NutUml;
     var strokeStyle = "#A80036";
     var toSelfHeight = 13;
 
+    const TITLE_SIZE = 28;
+    var TITLE_FONT = TITLE_SIZE + "px Arial";
+
     const TYPE_RESERVED = 1;
     const TYPE_WORD = 2;
     const TYPE_MESSAGE = 3;
@@ -30,8 +33,10 @@ var NutUml;
     const ACTOR_WIDTH = 34;
 
 
-    const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
+    const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
+    'control', 'entity', 'database', 'collections','title','header','footer'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
+    const oneLineWords = ['title','header','footer'];
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
     const dashOperators = ['<--', '-->'];
@@ -79,11 +84,23 @@ var NutUml;
         }
         
     }
+    function _calcObjSize(ctx,obj){
+        if(obj.title.length>0){
+            var mObj = _measureText(ctx,obj.title,TITLE_SIZE);
+            obj.titleHeight = mObj.height;
+        }
+        if(obj.header.length>0){
+            var hObj = _measureText(ctx,obj.header);
+            obj.headerHeight = hObj.height;
+        }
+        if(obj.footer.length>0){
+            var fObj = _measureText(ctx,obj.footer);
+            obj.footerHeight = fObj.height;
+        }
+    }
     function _calcParticipantSize(ctx,participant){
         ctx.font = font;
         var len = participant.length;
-        
-
         for (i = 0; i < len; i++) {
             var item = participant[i];
             _oneParticipantSize(ctx,item);
@@ -126,11 +143,12 @@ var NutUml;
         for(var i=0;i<len;i++){
             obj.maxParticipantHeight = Math.max(obj.participant[i].height,obj.maxParticipantHeight);
         }
+        var picPadding = pagePadding + obj.titleHeight + obj.headerHeight;
         for(var i=0;i<len;i++){
             var item = obj.participant[i];
             if(i==0){
                 item.x = pagePadding;
-                item.y = pagePadding + obj.maxParticipantHeight - item.height;
+                item.y = picPadding + obj.maxParticipantHeight - item.height;
                 item.lineX = item.x + item.width/2;
                 item.lineY = item.y + item.height;
                 continue
@@ -138,7 +156,6 @@ var NutUml;
             var preItem = obj.participant[i-1];
             var val = preItem.name + "_" + item.name;
             var val2 = item.name + "_" + preItem.name;
-            debugger;
             var span = minWidth;
             if(arr[val] !== undefined){
                 span = Math.max(span,arr[val])
@@ -148,11 +165,12 @@ var NutUml;
             }
             item.x = preItem.x + span;
             
-            item.y = pagePadding + obj.maxParticipantHeight - item.height;
+            item.y = picPadding + obj.maxParticipantHeight - item.height;
             item.lineX = item.x + item.width/2;
             item.lineY = item.y + item.height;
         }
-        obj.height = Math.ceil(lineHeight + obj.innerHeight + obj.maxParticipantHeight*2 + pagePadding*2);
+        obj.height = Math.ceil(obj.titleHeight + obj.footerHeight + obj.headerHeight 
+            + lineHeight + obj.innerHeight + obj.maxParticipantHeight*2 + pagePadding*2);
         var lastWidth = obj.participant[len-1].width;
         var lastLineWidth = arr[obj.participant[len-1].name + "_" + obj.participant[len-1].name];
         if(lastLineWidth && lastLineWidth>lastWidth/2){
@@ -162,7 +180,7 @@ var NutUml;
     }
     function _calcLinesXY(obj){
         
-        var curY = pagePadding + obj.maxParticipantHeight;
+        var curY = pagePadding + obj.headerHeight + obj.titleHeight + obj.maxParticipantHeight;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             curY +=item.height;
@@ -216,6 +234,11 @@ var NutUml;
             _drawActor(ctx,item);
         }else{
             _rectangle(ctx,item);
+        }
+    }
+    function _drawObj(ctx,obj){
+        if(obj.titleHeight>0){
+            _drawText(ctx,pagePadding, pagePadding+obj.headerHeight,obj.title,true);
         }
     }
     function _drawParticipant(ctx,obj){
@@ -374,13 +397,14 @@ var NutUml;
         ctx.stroke()
         ctx.restore()
     }
-    function _measureText(ctx,title){
+    function _measureText(ctx,title,fontHeight){
+        fontHeight = fontHeight || fontSize;
         var obj = { width: 0, height: 0};
         var arr = title.split("\n");
         arr.forEach(function(item){
             obj.width = Math.max(obj.width,ctx.measureText(item).width)
         })
-        obj.height = arr.length * (fontSize+paddingHeight) + paddingHeight;
+        obj.height = arr.length * (fontHeight+paddingHeight) + paddingHeight;
         return obj;
     }
     function _drawText(ctx,x,y,title,center){
@@ -409,6 +433,14 @@ var NutUml;
             participant : [],
             lines : [],
             innerHeight:0,
+            width:0,
+            height:0,
+            title: '', 
+            header: '',
+            footer: '',
+            headerHeight: 0,
+            titleHeight: 0,
+            footerHeight: 0,
             autonumber:false,
             hideFootbox:false
         };
@@ -422,6 +454,24 @@ var NutUml;
                 if("autonumber"==item.value){
                     obj.autonumber = true
                     continue
+                }
+                if("title"==item.value){
+                    var opItem = tokens[cur++];
+                    if(opItem.type == TYPE_MESSAGE){
+                        obj.title = opItem.value;
+                    }
+                }
+                if("header"==item.value){
+                    var opItem = tokens[cur++];
+                    if(opItem.type == TYPE_MESSAGE){
+                        obj.header = opItem.value;
+                    }
+                }
+                if("footer"==item.value){
+                    var opItem = tokens[cur++];
+                    if(opItem.type == TYPE_MESSAGE){
+                        obj.footer = opItem.value;
+                    }
                 }
                 if("hide"==item.value){
                     var hideItem = tokens[cur];
@@ -536,13 +586,6 @@ var NutUml;
     
 
     NutUml.prototype.drawUml = function(text){
-        var secObj = {
-            participant : [],
-            lines : [],
-            innerHeight:0,
-            width:0,
-            height:0
-        };
         var ana = this.analysis(text);
         console.log(ana)
         if(ana instanceof Array){
@@ -550,12 +593,13 @@ var NutUml;
         }else{
             return ana;
         }
-        secObj = _getObj(this.tokens);
+        var secObj = _getObj(this.tokens);
         console.log(secObj)
         var ctx= this.context;
         ctx.lineWidth=1;
         ctx.translate(0.5,0.5);
 
+        _calcObjSize(ctx,secObj);
         _calcParticipantSize(ctx,secObj.participant);
         _calcLineSize(ctx,secObj.lines);
         _calcParticipantXY(secObj);
@@ -564,6 +608,7 @@ var NutUml;
         this.canvas.width = secObj.width;
         this.canvas.height = secObj.height;
 
+        _drawObj(ctx,secObj);
         _drawParticipant(ctx,secObj);
         _drawLines(ctx,secObj);
         this.img.src=this.canvas.toDataURL();
@@ -606,6 +651,19 @@ var NutUml;
                         type: TYPE_RESERVED,
                         value: word,
                     }); // 存储保留字(关键字)
+                    if(oneLineWords.includes(word)){ 
+                        while(cur<str.length && /\s/.test(str[cur]) && !newLines.includes(str[cur])){
+                            cur++;
+                        }
+                        var tempWord = "";
+                        while(cur < str.length && !newLines.includes(str[cur])) {
+                            tempWord += str[cur++];
+                        }
+                        tokens.push({
+                            type: TYPE_MESSAGE,
+                            value: tempWord,
+                        })
+                    }
                 } else {
                     tokens.push({
                         type: TYPE_WORD,
