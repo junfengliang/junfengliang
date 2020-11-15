@@ -64,7 +64,7 @@ var NutUml;
         _drawText(ctx,item.x+paddingWidth,item.y,item.title,true)
         
     }
-    function _oneHeaderSize(ctx,item){
+    function _oneParticipantSize(ctx,item){
         var pw = paddingWidth;
         var ph = paddingHeight;
         var obj = _measureText(ctx,item.title);
@@ -79,14 +79,14 @@ var NutUml;
         }
         
     }
-    function _calcHeaderSize(ctx,header){
+    function _calcParticipantSize(ctx,participant){
         ctx.font = font;
-        var len = header.length;
+        var len = participant.length;
         
 
         for (i = 0; i < len; i++) {
-            var item = header[i];
-            _oneHeaderSize(ctx,item);
+            var item = participant[i];
+            _oneParticipantSize(ctx,item);
         }
     }
     function _calcLineSize(ctx,lines){
@@ -104,12 +104,12 @@ var NutUml;
             }
         }
     }
-    function _calcHeaderXY(obj){
+    function _calcParticipantXY(obj){
         obj.innerHeight = 0;
-        var len = obj.header.length;
+        var len = obj.participant.length;
         var arr = [];
         var minWidth = 100;
-        obj.maxHeaderHeight = 0;
+        obj.maxParticipantHeight = 0;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             var t = item.from + "_" + item.to;
@@ -122,45 +122,47 @@ var NutUml;
             console.log(t + "=" + arr[t])
             obj.innerHeight += item.height
         }
+        console.log(arr);
         for(var i=0;i<len;i++){
-            obj.maxHeaderHeight = Math.max(obj.header[i].height,obj.maxHeaderHeight);
+            obj.maxParticipantHeight = Math.max(obj.participant[i].height,obj.maxParticipantHeight);
         }
         for(var i=0;i<len;i++){
-            var item = obj.header[i];
+            var item = obj.participant[i];
             if(i==0){
                 item.x = pagePadding;
-                item.y = pagePadding + obj.maxHeaderHeight - item.height;
+                item.y = pagePadding + obj.maxParticipantHeight - item.height;
                 item.lineX = item.x + item.width/2;
                 item.lineY = item.y + item.height;
                 continue
             }
-            var preItem = obj.header[i-1];
+            var preItem = obj.participant[i-1];
             var val = preItem.name + "_" + item.name;
             var val2 = item.name + "_" + preItem.name;
+            debugger;
             var span = minWidth;
-            if(arr.includes(val)){
+            if(arr[val] !== undefined){
                 span = Math.max(span,arr[val])
             }
-            if(arr.includes(val2)){
+            if(arr[val2] !== undefined){
                 span = Math.max(span,arr[val2])
             }
             item.x = preItem.x + span;
             
-            item.y = pagePadding + obj.maxHeaderHeight - item.height;
+            item.y = pagePadding + obj.maxParticipantHeight - item.height;
             item.lineX = item.x + item.width/2;
             item.lineY = item.y + item.height;
         }
-        obj.height = Math.ceil(lineHeight + obj.innerHeight + obj.maxHeaderHeight*2 + pagePadding*2);
-        var lastWidth = obj.header[len-1].width;
-        var lastLineWidth = arr[obj.header[len-1].name + "_" + obj.header[len-1].name];
+        obj.height = Math.ceil(lineHeight + obj.innerHeight + obj.maxParticipantHeight*2 + pagePadding*2);
+        var lastWidth = obj.participant[len-1].width;
+        var lastLineWidth = arr[obj.participant[len-1].name + "_" + obj.participant[len-1].name];
         if(lastLineWidth && lastLineWidth>lastWidth/2){
             lastWidth = lastWidth/2 + lastLineWidth;
         }
-        obj.width = Math.ceil(obj.header[len-1].x + lastWidth + pagePadding) ; 
+        obj.width = Math.ceil(obj.participant[len-1].x + lastWidth + pagePadding) ; 
     }
     function _calcLinesXY(obj){
         
-        var curY = pagePadding + obj.maxHeaderHeight;
+        var curY = pagePadding + obj.maxParticipantHeight;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             curY +=item.height;
@@ -169,17 +171,17 @@ var NutUml;
             if(item.type !=="line"){
                 continue;
             }
-            var fromHeader, toHeader;
-            for(var k=0;k<obj.header.length;k++){
-                if(obj.header[k].name == item.from){
-                    fromHeader = obj.header[k];
+            var fromParticipant, toParticipant;
+            for(var k=0;k<obj.participant.length;k++){
+                if(obj.participant[k].name == item.from){
+                    fromParticipant = obj.participant[k];
                 }
-                if(obj.header[k].name == item.to){
-                    toHeader = obj.header[k];
+                if(obj.participant[k].name == item.to){
+                    toParticipant = obj.participant[k];
                 }
             }
-            item.x = fromHeader.lineX;
-            item.toX = toHeader.lineX;
+            item.x = fromParticipant.lineX;
+            item.toX = toParticipant.lineX;
         }
 
     }
@@ -209,22 +211,22 @@ var NutUml;
         ctx.fill()
         ctx.restore()
     }
-    function _drawOneHeader(ctx,item){
+    function _drawOneParticipant(ctx,item){
         if(item.type=="actor"){
             _drawActor(ctx,item);
         }else{
             _rectangle(ctx,item);
         }
     }
-    function _drawHeader(ctx,obj){
-        var len = obj.header.length;
+    function _drawParticipant(ctx,obj){
+        var len = obj.participant.length;
         for(var i=0;i<len;i++){
-            var item = obj.header[i];
-            _drawOneHeader(ctx,item);
+            var item = obj.participant[i];
+            _drawOneParticipant(ctx,item);
             var bottom = _copyObj(item);
             bottom.y = item.y + obj.innerHeight + lineHeight + item.height;
             if(!obj.hideFootbox){
-                _drawOneHeader(ctx,bottom);
+                _drawOneParticipant(ctx,bottom);
             }
             _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
         }
@@ -303,11 +305,10 @@ var NutUml;
         if(obj.autonumber){
             message = item.number + " " + message;
         }
-    
-        _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-fontSize-paddingHeight*2, message);
+        var textObj = _measureText(ctx,item.message);
+        _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-textObj.height, message);
         if(item.from==item.to){
-            var obj = _measureText(ctx,item.message);
-            _drawToSelf(ctx,item.x,item.y + obj.height - lineHeight+paddingHeight)
+            _drawToSelf(ctx,item.x,item.y+paddingHeight)
             return;
         }
         if(dashOperators.includes(item.operator)){
@@ -405,7 +406,7 @@ var NutUml;
     }
     function _getObj(tokens){
         var obj = {
-            header : [],
+            participant : [],
             lines : [],
             innerHeight:0,
             autonumber:false,
@@ -413,7 +414,7 @@ var NutUml;
         };
         var len = tokens.length;
         var cur =0;
-        var headerArr = [];
+        var participantArr = [];
         var number = 1;
         while(cur<len){
             var item = tokens[cur++];
@@ -433,12 +434,12 @@ var NutUml;
                 if(participantWords.includes(item.value)){
                     var opItem = tokens[cur++];
                     if(opItem.type == TYPE_WORD){
-                        obj.header.push({ 
+                        obj.participant.push({ 
                             name:opItem.value, 
                             title:opItem.value, 
                             type:item.value 
                         });
-                        headerArr.push(opItem.value);
+                        participantArr.push(opItem.value);
                     }
                 }
             }
@@ -458,13 +459,13 @@ var NutUml;
                     continue
                 }
                 
-                if(!headerArr.includes(item.value)){
-                    obj.header.push({
+                if(!participantArr.includes(item.value)){
+                    obj.participant.push({
                         name: item.value,
                         title: item.value,
                         type: "participant"
                     });
-                    headerArr.push(item.value);
+                    participantArr.push(item.value);
                 }
                 if(cur>=len){
                     break;
@@ -475,7 +476,7 @@ var NutUml;
                 }
                 lineItem.operator = opItem.value;
                 var toItem = tokens[cur++];
-                var toHeader = {
+                var toParticipant = {
                     name:toItem.value,
                     title:toItem.value,
                     type: "participant"
@@ -487,9 +488,9 @@ var NutUml;
                             cur++
                             var wordItem = tokens[cur++];
                             if(wordItem.type == TYPE_WORD){
-                                toHeader.name = wordItem.value
+                                toParticipant.name = wordItem.value
                             }else if(wordItem.type==TYPE_STRING){
-                                toHeader.title = wordItem.value
+                                toParticipant.title = wordItem.value
                             }
                             if(cur<len){
                                 sepItem = tokens[cur];
@@ -504,15 +505,15 @@ var NutUml;
                         }
                     }
                 }
-                if(!headerArr.includes(toHeader.name)){
-                    obj.header.push(toHeader);
-                    headerArr.push(toHeader.name);
+                if(!participantArr.includes(toParticipant.name)){
+                    obj.participant.push(toParticipant);
+                    participantArr.push(toParticipant.name);
                 }
                 if(fromOperators.includes(opItem.value)){
                     lineItem.from = item.value;
-                    lineItem.to = toHeader.name;
+                    lineItem.to = toParticipant.name;
                 }else{
-                    lineItem.from = toHeader.name;
+                    lineItem.from = toParticipant.name;
                     lineItem.to = item.value;
                 }
                 lineItem.number=number++;
@@ -536,7 +537,7 @@ var NutUml;
 
     NutUml.prototype.drawUml = function(text){
         var secObj = {
-            header : [],
+            participant : [],
             lines : [],
             innerHeight:0,
             width:0,
@@ -555,15 +556,15 @@ var NutUml;
         ctx.lineWidth=1;
         ctx.translate(0.5,0.5);
 
-        _calcHeaderSize(ctx,secObj.header);
+        _calcParticipantSize(ctx,secObj.participant);
         _calcLineSize(ctx,secObj.lines);
-        _calcHeaderXY(secObj);
+        _calcParticipantXY(secObj);
         _calcLinesXY(secObj);
 
         this.canvas.width = secObj.width;
         this.canvas.height = secObj.height;
 
-        _drawHeader(ctx,secObj);
+        _drawParticipant(ctx,secObj);
         _drawLines(ctx,secObj);
         this.img.src=this.canvas.toDataURL();
         return "";
