@@ -513,18 +513,26 @@ new Vue({
         },
         textarea7: function(){
             this.draw(this.$refs.canvas7,this.textarea7);
+        },
+        textarea8: function(){
+            this.draw(this.$refs.canvas8,this.textarea8);
+        },
+        textarea9: function(){
+            this.draw(this.$refs.canvas9,this.textarea9);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        this.draw(this.$refs.canvas1,this.textarea1);
-        this.draw(this.$refs.canvas2,this.textarea2);
+        for(var i=1;i<=9;i++){
+            this.draw(this.$refs["canvas"+i],this["textarea" + i]);
+        }
+      /*  this.draw(this.$refs.canvas2,this.textarea2);
         this.draw(this.$refs.canvas3,this.textarea3);
         this.draw(this.$refs.canvas4,this.textarea4);
         this.draw(this.$refs.canvas5,this.textarea5);
         this.draw(this.$refs.canvas6,this.textarea6);
         this.draw(this.$refs.canvas7,this.textarea7);
-
+*/
     },
     methods: {
         draw: function(canvas,text){

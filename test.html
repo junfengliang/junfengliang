@@ -36,7 +36,7 @@
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
             <textarea style="width:100%; height:200px;" placeholder="请输入内容" v-model="textarea"></textarea>
         </div>
-        <div ref="canvas" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas" class="col-md-6 text-center">
         </div>
     </div>
     <footer>
@@ -47,7 +47,21 @@
     
 new Vue({
     data: {
-        textarea: 'Alice->Alice: This is a signal to self.\\nIt also demonstrates\\nmultiline \\ntext',
+        textarea: 'Alice -> Bob: Authentication Request\n'
+                +'alt successful case\n'
+                +'    Bob -> Alice: Authentication Accepted\n'
+                +'else some kind of failure\n'
+                +'    Bob -> Alice: Authentication Failure\n'
+                +'    group My own label\n'
+                +'      Alice -> Log : Log attack start\n'
+                +'        loop 1000 times\n'
+                +'            Alice -> Bob: DNS Attack\n'
+                +'        end\n'
+                +'      Alice -> Log : Log attack end\n'
+                +'    end\n'
+                +'else Another type of failure\n'
+                +'Bob -> Alice: Please repeat\n'
+                +'end',
         textarea2: '',
     },
     watch: {
