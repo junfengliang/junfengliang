@@ -686,6 +686,53 @@ var NutUml;
         while(cur<len){
             var item = tokens[cur++];
             if(item.type==TYPE_RESERVED){
+                if("note"==item.value){
+                    // handle two case
+                    //note left: this is a first note
+                    //note right: this is another note
+
+                    if(cur+2<len){
+                        var noteDir = tokens[cur];
+                        var noteColon = tokens[cur+1];
+                        var noteMessage = tokens[cur+2];
+                        if( ("left" == noteDir.value || "right"==noteDir.value)
+                         && ":"==noteColon.value && noteMessage.type == TYPE_MESSAGE){
+                             var noteItem = {
+                                    "direction":noteDir.value,
+                                    "message":noteMessage.value
+                                }
+                            cur = cur+3;
+                            if(obj.lines.length>0){
+                                obj.lines[obj.lines.length-1].noteItem = noteItem;
+                            }
+                            continue;
+                         }
+                    }
+                    /** handle blow case
+                        note left
+                        a note
+                        can also be defined
+                        on several lines
+                        end note
+                     */
+                    if(cur+3<len){
+                        var noteDir = tokens[cur];
+                        var noteMessage = tokens[cur+1];
+                        if( ("left" == noteDir.value || "right"==noteDir.value)
+                         && noteMessage.type == TYPE_MESSAGE 
+                         && tokens[cur+2].value=='end' && tokens[cur+3].value=='note'){
+                            var noteItem = {
+                                "direction":noteDir.value,
+                                "message":noteMessage.value
+                            }
+                            cur = cur+4;
+                            if(obj.lines.length>0){
+                                obj.lines[obj.lines.length-1].noteItem = noteItem;
+                            }
+                            continue;
+                         }
+                    }
+                }
                 if("autonumber"==item.value){
                     obj.autonumber = true
                     continue
