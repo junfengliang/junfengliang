@@ -57,9 +57,11 @@ var NutUml;
 
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
-        'alt','else','opt','loop','par','break','critical','group','end'];
+        'alt','else','opt','loop','par','break','critical','group','end','note',
+        'left','right','of','over'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const oneLineWords = ['title','header','footer','alt','else','opt','loop','par','break','critical','group'];
+    const multiLineWords = ['title','note'];
     const groupWords = ['opt','loop','par','break','critical','group']
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
@@ -530,10 +532,12 @@ var NutUml;
             message = item.number + " " + message;
         }
         var textObj = _measureText(ctx,item.message);
-        _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-textObj.height, message);
         if(item.from==item.to){
-            _drawToSelf(ctx,item.x,item.y+paddingHeight)
+            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.cornerY+paddingHeight, message);
+            _drawToSelf(ctx,item.x,item.y-toSelfHeight)
             return;
+        }else{
+            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-textObj.height, message);
         }
         if(dashOperators.includes(item.operator)){
             _dashedLine(ctx,item.x, item.y, item.toX, item.toY);
@@ -908,10 +912,55 @@ var NutUml;
          * tokens存储词法分析的最终结果
          */
         let tokens = [];
-        
-
+        var multiLineFlag = false;
+        var multiLine = false;
         while(cur < str.length) {
-
+            if(newLines.includes(str[cur]) && multiLineFlag ==true){
+                multiLine = true
+                multiLineFlag = false
+                cur++
+            }
+            if(multiLine){
+                // handle multiline message until of 'end' at begin of line
+                var message = "";
+                var lineStart = true;
+                while(cur < str.length){
+                    if(lineStart){
+                        if(isWordChar(str[cur])) { // 读单词
+                            let word = "" + str[cur++];
+                            // 测试下一位字符,如果不是字母直接进入下一次循环(此时cur已经右移)
+                            // 如果是则继续读字母,并将cur向右移动
+                            while(cur < str.length && isWordChar(str[cur])) {
+                                // cur < str.length防止越界
+                                word += str[cur++];
+                            }
+                            if("end"==word){
+                                multiLine = false;
+                                tokens.push({
+                                    type: TYPE_MESSAGE,
+                                    value: message,
+                                });
+                                tokens.push({
+                                    type: TYPE_RESERVED,
+                                    value: word,
+                                });
+                                break;
+                            }else{
+                                message += word
+                                lineStart = false;
+                            }
+                        }else{
+                            message += str[cur++]
+                        }
+                    }else{
+                        if(newLines.includes(str[cur])){
+                            lineStart = true;
+                        }
+                        message += str[cur++]
+                    }
+                }
+                multiLine =  false
+            }
             if(/\s/.test(str[cur])) { // 跳过空格
                 cur++;
             } else if(isWordChar(str[cur])) { // 读单词
@@ -928,13 +977,17 @@ var NutUml;
                         type: TYPE_RESERVED,
                         value: word,
                     }); // 存储保留字(关键字)
-                    if(oneLineWords.includes(word)){ 
+                    if(multiLineWords.includes(word)){
+                        multiLineFlag = true;
+                    }
+                    if(oneLineWords.includes(word)){
                         while(cur<str.length && /\s/.test(str[cur]) && !newLines.includes(str[cur])){
                             cur++;
                         }
                         var tempWord = "";
                         while(cur < str.length && !newLines.includes(str[cur])) {
                             tempWord += str[cur++];
+                            multiLineFlag = false;
                         }
                         tokens.push({
                             type: TYPE_MESSAGE,
@@ -948,6 +1001,7 @@ var NutUml;
                     }); // 存储普通单词                            
                 }
             } else if(separators.includes(str[cur])) {
+                multiLineFlag = false
                 tokens.push({
                     type: TYPE_SEPARATORS,
                     value: str[cur++],

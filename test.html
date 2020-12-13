@@ -47,21 +47,18 @@
     
 new Vue({
     data: {
-        textarea: 'Alice -> Bob: Authentication Request\n'
-                +'alt successful case\n'
-                +'    Bob -> Alice: Authentication Accepted\n'
-                +'else some kind of failure\n'
-                +'    Bob -> Alice: Authentication Failure\n'
-                +'    group My own label\n'
-                +'      Alice -> Log : Log attack start\n'
-                +'        loop 1000 times\n'
-                +'            Alice -> Bob: DNS Attack\n'
-                +'        end\n'
-                +'      Alice -> Log : Log attack end\n'
-                +'    end\n'
-                +'else Another type of failure\n'
-                +'Bob -> Alice: Please repeat\n'
-                +'end',
+        textarea: 'Alice->Bob : hello\n'
+                +'note left: this is a first note\n\n'
+
+                +'Bob->Alice : ok\n'
+                +'note right: this is another note\n\n'
+
+                +'Bob->Bob : I am thinking\n'
+                +'note left\n'
+                +'a note\n'
+                +'can also be defined\n'
+                +'on several lines\n'
+                +'end note',
         textarea2: '',
     },
     watch: {
