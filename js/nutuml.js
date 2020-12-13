@@ -49,10 +49,10 @@ var NutUml;
     const LINE_ELSE =4;
     const LINE_GROUP = 5;
     const LINE_END = 6;
-    const GROUP_LINE_LEFT_PADDING = 10;
-    const GROUP_GROUP_LEFT_PADDING = 5;
-    const GROUP_LINE_RIGHT_PADDING = 10;
-    const GROUP_GROUP_RIGHT_PADDING = 10;
+    const GROUP_LINE_LEFT_PADDING = 30;
+    const GROUP_GROUP_LEFT_PADDING = 10;
+    const GROUP_LINE_RIGHT_PADDING = 20;
+    const GROUP_GROUP_RIGHT_PADDING = 20;
 
 
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
@@ -286,6 +286,8 @@ var NutUml;
         var hisArr = [];
         var curY = pagePadding + obj.headerHeight + obj.titleHeight + obj.maxParticipantHeight;
         var curGroupItem, lastGroupItem;
+        var minX = 0;
+        var maxX = 0;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             item.cornerY = curY;
@@ -314,6 +316,8 @@ var NutUml;
                         }else{
                             curGroupItem.toX = Math.max(curGroupItem.toX,lastGroupItem.toX + GROUP_GROUP_RIGHT_PADDING);
                         }
+                        minX = Math.min(minX,curGroupItem.x);
+                        maxX = Math.max(maxX,curGroupItem.toX);
                     }
                     
                 }
@@ -351,7 +355,13 @@ var NutUml;
                 }
             }
         }
-
+        if(maxX+pagePadding>obj.width){
+            obj.width = maxX+pagePadding
+        }
+        if(minX<0){
+            obj.tranlateX = Math.ceil(Math.abs(minX));
+            obj.width += obj.tranlateX
+        }
     }
     function _copyObj(obj){
         var copy = {};
@@ -859,7 +869,7 @@ var NutUml;
         console.log(secObj)
         var ctx= this.context;
         ctx.lineWidth=1;
-        ctx.translate(0.5,0.5);
+        
 
         _calcObjSize(ctx,secObj);
         _calcParticipantSize(ctx,secObj.participant);
@@ -870,7 +880,11 @@ var NutUml;
         this.canvas.width = secObj.width;
         this.canvas.height = secObj.height;
 
+        ctx.translate(0.5,0.5);
         _drawObj(ctx,secObj);
+        if(secObj.tranlateX!=undefined){
+            ctx.translate(secObj.tranlateX,0.5);
+        }
         _drawParticipant(ctx,secObj);
         _drawGroupAlt(ctx,secObj);
         _drawLines(ctx,secObj);
