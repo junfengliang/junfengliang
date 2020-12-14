@@ -53,6 +53,11 @@ var NutUml;
     const GROUP_GROUP_LEFT_PADDING = 10;
     const GROUP_LINE_RIGHT_PADDING = 20;
     const GROUP_GROUP_RIGHT_PADDING = 20;
+    const NOTE_PADDING_TOP = 10;
+    const NOTE_PADDING_LEFT = 10;
+    const NOTE_PADDING_BOTTOM = 10;
+    const NOTE_PADDING_RIGHT = 15;
+    const NOTE_MARGIN = 10;
 
 
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
@@ -169,6 +174,32 @@ var NutUml;
         _drawText(ctx,item.x+paddingWidth,item.y,item.title,true)
         
     }
+    function _noteRectangle(ctx,item){
+        ctx.save()
+        ctx.beginPath()
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+        var y = item.cornerY + NOTE_PADDING_TOP;
+        var height = item.noteHeight - NOTE_PADDING_TOP - NOTE_PADDING_BOTTOM;
+        ctx.fillStyle= fillStyle;
+        ctx.fillRect(item.noteX, y, item.noteWidth, height);
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+
+        ctx.fillRect(item.noteX, y, item.noteWidth, height);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(item.noteX, y , item.noteWidth, height);
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+
+        _drawText(ctx,item.noteX+NOTE_PADDING_LEFT,y,item.noteItem.message,false)
+        
+    }
     function _oneParticipantSize(ctx,item){
         var pw = paddingWidth;
         var ph = paddingHeight;
@@ -224,6 +255,12 @@ var NutUml;
             }
             if(item.from == item.to && item.type == LINE_SEQUENCE){
                 item.height += toSelfHeight;
+            }
+            if(item.noteItem !=undefined){
+                var noteObj = _measureText(ctx,item.noteItem.message);
+                item.noteWidth = noteObj.width + NOTE_PADDING_LEFT + NOTE_PADDING_RIGHT;
+                item.noteHeight = noteObj.height + NOTE_PADDING_TOP + NOTE_PADDING_BOTTOM;
+                item.height = Math.max(item.height,item.noteHeight);
             }
         }
     }
@@ -344,6 +381,17 @@ var NutUml;
             }
             item.x = fromParticipant.lineX
             item.toX = toParticipant.lineX
+            //note x
+            if(item.noteItem!=undefined){
+                if("left"==item.noteItem.direction){
+                    item.noteX = Math.min(item.x,item.toX) - item.noteWidth - NOTE_MARGIN;
+                    minX = Math.min(minX,item.noteX);
+                }else if("right"==item.noteItem.direction){
+                    item.noteX = Math.max(item.x,item.toX) + NOTE_MARGIN;
+                    maxX = Math.max(maxX,item.noteX+item.noteWidth+pagePadding);
+                }
+            }
+
             if(curGroupItem!=undefined){
                 if(curGroupItem.x==undefined){
                     curGroupItem.x = item.x - GROUP_LINE_LEFT_PADDING
@@ -527,6 +575,9 @@ var NutUml;
         ctx.fillRect(Math.min(item.x,item.toX), item.cornerY, item.width, item.height);
         ctx.restore();
     */
+        if(item.noteItem != undefined){
+            _noteRectangle(ctx,item)
+        }
         var message = item.message;
         if(obj.autonumber){
             message = item.number + " " + message;
