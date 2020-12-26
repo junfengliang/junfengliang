@@ -62,13 +62,14 @@ var NutUml;
     const NOTE_PADDING_BOTTOM = 5;
     const NOTE_PADDING_RIGHT = 15;
     const NOTE_MARGIN = 10;
-//, 'database', 'collections'
-    const iParticipant = ['actor', 'boundary', 'control', 'entity'];
+//, 'collections'
+    const iParticipant = ['actor', 'boundary', 'control', 'entity', 'database'];
     const iPar = {
         actor: { width: 34, height: 54 },
         boundary: { width: 42, height: 26 },
         control: {width: 26, height: 32},
-        entity: {width: 24, height: 26}
+        entity: {width: 24, height: 26},
+        database: {width: 38, height: 50}
     };
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
@@ -159,6 +160,50 @@ var NutUml;
         _drawGroupText(ctx,item.x +paddingWidth,frameY-2,typeName,true)
 
     }
+    function _drawCollections(ctx,item){
+        var height = item.height - 4;
+        var width = item.width -4;
+        ctx.save()
+        ctx.beginPath()
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        ctx.fillStyle= fillStyle;
+
+        ctx.fillRect(item.x+4, item.y, width,  height);
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+
+        ctx.fillRect(item.x+4, item.y, width, height);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(item.x+4, item.y, width, height);
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath()
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.fillRect(item.x, item.y+4, width,  height);
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+
+        ctx.fillRect(item.x, item.y+4, width, height);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(item.x, item.y+4, width, height);
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+
+        _drawText(ctx,item.x+paddingWidth,item.y+4,item.title,true)
+        
+    }
     function _rectangle(ctx,item){
         ctx.save()
         ctx.beginPath()
@@ -244,6 +289,10 @@ var NutUml;
         var obj = _measureText(ctx,item.title);
         item.width = obj.width + pw*2;
         item.height = obj.height;
+        if("collections"==item.type){
+            item.width +=4;
+            item.height +=4;
+        }
         if(iParticipant.includes(item.type)){
             item.width = obj.width;
             item.height += iPar[item.type].height;
@@ -487,6 +536,10 @@ var NutUml;
             _drawControl(ctx,item);
         }else if(item.type=="entity"){
             _drawEntity(ctx,item);
+        }else if(item.type=="database"){
+            _drawDatabase(ctx,item);
+        }else if(item.type=="collections"){
+            _drawCollections(ctx,item);
         }else{
             _rectangle(ctx,item);
         }
@@ -664,6 +717,73 @@ var NutUml;
         ctx.stroke(); 
         ctx.fill();
         ctx.restore(); 
+    }
+    function _drawDatabase(ctx,item){
+        var x = item.x;
+        var y = item.y;
+        if(item.isBottom){
+            y+=fontSize+paddingHeight;
+        }
+        var picWidth = iPar["database"].width;
+        var picHeight = iPar["database"].height;
+        if(item.width>picWidth){
+            x = item.x + (item.width-picWidth)/2;
+        }
+        ctx.save()
+        ctx.lineWidth=2
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.shadowBlur=0;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowColor= shadowColor;
+
+        ctx.beginPath();
+        ctx.fillRect(item.x, y+11, 38, 28);
+        ctx.fill()
+
+        ctx.lineWidth=2
+        ctx.ellipse(x+19,y+11,19,11,0,0,Math.PI*2);
+        
+        ctx.ellipse(x+19,y+39,19,11,0,0,Math.PI);
+        ctx.moveTo(x,y+11)
+        ctx.lineTo(x,y+39)
+        ctx.moveTo(x+38,y+11)
+        ctx.lineTo(x+38,y+39)
+        ctx.fill()
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=2;
+        ctx.shadowOffsetY=3;
+        ctx.shadowColor= shadowColor;
+        
+        ctx.moveTo(x+38,y+11)
+        ctx.lineTo(x+38,y+39)
+        ctx.ellipse(x+19,y+39,19,11,0,0,Math.PI);
+        ctx.stroke()
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath();
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        x=item.x;
+        var textWidth = ctx.measureText(item.title).width;
+        if(textWidth<picWidth){
+            x+= (picWidth-textWidth)/2;
+        }
+        ctx.fontSize = fontSize;
+        if(item.isBottom){
+            ctx.fillText(item.title,x,y-paddingHeight);
+        }else{
+            ctx.fillText(item.title,x,fontSize+picHeight+item.y);
+        }
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
     }
     function _drawEntity(ctx,item){
         var x = item.x;
