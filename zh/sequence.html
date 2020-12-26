@@ -172,7 +172,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>给消息添加注释(开发中...)</h4>
+            <h4>给消息添加注释</h4>
             <p>我们可以通过在消息后面添加 note left 或者 note right 关键词来给消息添加注释。
                 也可以通过使用 end note 来添加多行注释。
             </p>
@@ -537,11 +537,14 @@ new Vue({
         },
         textarea9: function(){
             this.draw(this.$refs.canvas9,this.textarea9);
+        },
+        textarea10: function(){
+            this.draw(this.$refs.canvas10,this.textarea9);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=9;i++){
+        for(var i=1;i<=10;i++){
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
         }
       /*  this.draw(this.$refs.canvas2,this.textarea2);

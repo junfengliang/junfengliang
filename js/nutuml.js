@@ -19,6 +19,9 @@ var NutUml;
     var fillStyleWhite = "#ffffff";
     var textFillStyle = "#333";
     var strokeStyle = "#A80036";
+    const NOTE_FILL_STYLE="#F6FF70"
+    const NOTE_STROKE_STYLE="#BA0028"
+    
     var toSelfHeight = 13;
     const FILL_RED = "#ff0000";
     const GROUP_TEXT_SIZE = 12;
@@ -38,7 +41,6 @@ var NutUml;
     const TYPE_SEPARATE_LINE = 7;
     const ALT_HEIGHT = 10;
     const END_HEIGHT = 10;
-    const ACTOR_WIDTH = 34;
 
     const TAB_LEFT_PADDING = 13;
     const TAB_RIGHT_PADDING = 15;
@@ -55,13 +57,19 @@ var NutUml;
     const GROUP_GROUP_LEFT_PADDING = 10;
     const GROUP_LINE_RIGHT_PADDING = 20;
     const GROUP_GROUP_RIGHT_PADDING = 20;
-    const NOTE_PADDING_TOP = 10;
+    const NOTE_PADDING_TOP = 15;
     const NOTE_PADDING_LEFT = 10;
-    const NOTE_PADDING_BOTTOM = 10;
+    const NOTE_PADDING_BOTTOM = 5;
     const NOTE_PADDING_RIGHT = 15;
     const NOTE_MARGIN = 10;
-
-
+//, 'database', 'collections'
+    const iParticipant = ['actor', 'boundary', 'control', 'entity'];
+    const iPar = {
+        actor: { width: 34, height: 54 },
+        boundary: { width: 42, height: 26 },
+        control: {width: 26, height: 32},
+        entity: {width: 24, height: 26}
+    };
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
         'alt','else','opt','loop','par','break','critical','group','end','note',
@@ -177,27 +185,55 @@ var NutUml;
         
     }
     function _noteRectangle(ctx,item){
-        ctx.save()
-        ctx.beginPath()
-        ctx.shadowBlur=3;
-        ctx.shadowOffsetX=4;
-        ctx.shadowOffsetY=4;
-        ctx.shadowColor= shadowColor;
         var y = item.cornerY + NOTE_PADDING_TOP;
         var height = item.noteHeight - NOTE_PADDING_TOP - NOTE_PADDING_BOTTOM;
-        ctx.fillStyle= fillStyle;
-        ctx.fillRect(item.noteX, y, item.noteWidth, height);
-        ctx.shadowOffsetX=0;
-        ctx.shadowOffsetY=0;
-        ctx.shadowBlur=1;
 
-        ctx.fillRect(item.noteX, y, item.noteWidth, height);
+       
 
-        ctx.strokeStyle= strokeStyle;
-        ctx.strokeRect(item.noteX, y , item.noteWidth, height);
+        // draw left, top
+        ctx.save()
+        ctx.beginPath()
+        ctx.lineWidth=1;
+        ctx.fillStyle=NOTE_FILL_STYLE;
+        ctx.strokeStyle=NOTE_STROKE_STYLE;
+
+        ctx.moveTo(item.noteX, y+height); // left bottom
+        ctx.lineTo(item.noteX, y); // left
+        ctx.lineTo(item.noteX+ item.noteWidth -10, y); //top
+        ctx.lineTo(item.noteX+ item.noteWidth,y+10); 
+        ctx.lineTo(item.noteX+ item.noteWidth,y+height); //right
+        ctx.closePath();
         ctx.stroke();
-        ctx.fill();
-        ctx.restore();
+        ctx.fill()
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath()
+        ctx.lineWidth=1;
+        ctx.strokeStyle=NOTE_STROKE_STYLE;
+        ctx.moveTo(item.noteX+ item.noteWidth -10 , y); //top
+        ctx.lineTo(item.noteX+ item.noteWidth -10 ,y+10); 
+        ctx.lineTo(item.noteX+ item.noteWidth,y+10); //right
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore()
+
+        // draw right, bottom
+        ctx.save()
+        ctx.beginPath()
+        ctx.lineWidth=1;
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=2;
+        ctx.shadowOffsetY=2;
+        ctx.shadowColor= shadowColor;
+        ctx.strokeStyle=NOTE_STROKE_STYLE;
+
+        ctx.moveTo(item.noteX+item.noteWidth, y+10);
+        ctx.lineTo(item.noteX+item.noteWidth, y+height);
+        ctx.lineTo(item.noteX, y+height);
+        ctx.stroke();
+        ctx.restore()
+        ctx.beginPath()
 
         _drawText(ctx,item.noteX+NOTE_PADDING_LEFT,y,item.noteItem.message,false)
         
@@ -208,14 +244,13 @@ var NutUml;
         var obj = _measureText(ctx,item.title);
         item.width = obj.width + pw*2;
         item.height = obj.height;
-        if("actor"==item.type){
+        if(iParticipant.includes(item.type)){
             item.width = obj.width;
-            item.height += 54;
-            if(item.width<ACTOR_WIDTH){
-                item.width = ACTOR_WIDTH;
+            item.height += iPar[item.type].height;
+            if(item.width<iPar[item.type].width){
+                item.width = iPar[item.type].width;
             }
         }
-        
     }
     function _calcObjSize(ctx,obj){
         if(obj.title.length>0){
@@ -258,11 +293,12 @@ var NutUml;
             if(item.from == item.to && item.type == LINE_SEQUENCE){
                 item.height += toSelfHeight;
             }
+            item.lineHeight = item.height;
             if(item.noteItem !=undefined){
                 var noteObj = _measureText(ctx,item.noteItem.message);
                 item.noteWidth = noteObj.width + NOTE_PADDING_LEFT + NOTE_PADDING_RIGHT;
                 item.noteHeight = noteObj.height + NOTE_PADDING_TOP + NOTE_PADDING_BOTTOM;
-                item.height = Math.max(item.height,item.noteHeight);
+                item.height = Math.max(item.lineHeight,item.noteHeight);
             }
         }
     }
@@ -332,6 +368,7 @@ var NutUml;
         for(var j=0;j<obj.lines.length;j++){
             var item = obj.lines[j];
             item.cornerY = curY;
+            item.lineY = item.cornerY + (item.height-item.lineHeight)/2;
             curY +=item.height;
             item.y = curY;
             item.toY = curY;
@@ -444,6 +481,12 @@ var NutUml;
     function _drawOneParticipant(ctx,item){
         if(item.type=="actor"){
             _drawActor(ctx,item);
+        }else if(item.type=="boundary"){
+            _drawBoundary(ctx,item);
+        }else if(item.type=="control"){
+            _drawControl(ctx,item);
+        }else if(item.type=="entity"){
+            _drawEntity(ctx,item);
         }else{
             _rectangle(ctx,item);
         }
@@ -477,6 +520,7 @@ var NutUml;
             _drawOneParticipant(ctx,item);
             var bottom = _copyObj(item);
             bottom.y = item.y + obj.innerHeight + lineHeight + item.height;
+            bottom.isBottom = true;
             if(!obj.hideFootbox){
                 _drawOneParticipant(ctx,bottom);
             }
@@ -571,7 +615,7 @@ var NutUml;
         _dashedLine(ctx,item.refItem.x, lineY, item.refItem.toX, lineY);
     }
     function _line(ctx,item,obj){
-     /*   
+      /*
         ctx.save(); 
         ctx.fillStyle = FILL_RED;
         ctx.fillRect(Math.min(item.x,item.toX), item.cornerY, item.width, item.height);
@@ -586,18 +630,18 @@ var NutUml;
         }
         var textObj = _measureText(ctx,item.message);
         if(item.from==item.to){
-            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.cornerY+paddingHeight, message);
-            _drawToSelf(ctx,item.x,item.y-toSelfHeight)
+            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.lineY+paddingHeight, message);
+            _drawToSelf(ctx,item.x,item.lineY+item.lineHeight-toSelfHeight)
             return;
         }else{
-            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.y-textObj.height, message);
+            _drawText(ctx,Math.min(item.x,item.toX) + 10,item.lineY+paddingHeight, message);
         }
         if(dashOperators.includes(item.operator)){
-            _dashedLine(ctx,item.x, item.y, item.toX, item.toY);
+            _dashedLine(ctx,item.x, item.lineY+item.lineHeight, item.toX, item.lineY+item.lineHeight);
         }else{
-            _realLine(ctx,item.x, item.y, item.toX, item.toY);
+            _realLine(ctx,item.x, item.lineY+item.lineHeight, item.toX, item.lineY+item.lineHeight);
         }
-        _drawArrow(ctx,item.toX,item.toY,item.x>item.toX);
+        _drawArrow(ctx,item.toX,item.lineY+item.lineHeight,item.x>item.toX);
     }
     function _drawArrow(ctx, x,y,reverse) { 
         var xDelta =-12;
@@ -621,14 +665,205 @@ var NutUml;
         ctx.fill();
         ctx.restore(); 
     }
-    function _drawActor(ctx,item){
+    function _drawEntity(ctx,item){
         var x = item.x;
         var y = item.y;
-        if(item.width>ACTOR_WIDTH){
-            x = item.x + (item.width-ACTOR_WIDTH)/2;
+        if(item.isBottom){
+            y+=fontSize+paddingHeight;
+        }
+        var picWidth = iPar["entity"].width;
+        var picHeight = iPar["entity"].height;
+        if(item.width>picWidth){
+            x = item.x + (item.width-picWidth)/2;
+        }
+        ctx.save()
+        ctx.lineWidth=2
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        ctx.beginPath();
+        ctx.lineWidth=2
+
+        ctx.arc(x+12,y+12,12,0,2*Math.PI);
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.shadowBlur=0;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.arc(x+12,y+12,11,0,2*Math.PI);
+        ctx.fill();
+
+        ctx.beginPath()
+        ctx.fillStyle = strokeStyle;
+        ctx.moveTo(x,y+25);
+        ctx.lineTo(x+25,y+25);
+        ctx.stroke()
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath();
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        x=item.x;
+        var textWidth = ctx.measureText(item.title).width;
+        if(textWidth<picWidth){
+            x+= (picWidth-textWidth)/2;
+        }
+        ctx.fontSize = fontSize;
+        if(item.isBottom){
+            ctx.fillText(item.title,x,y-paddingHeight);
+        }else{
+            ctx.fillText(item.title,x,fontSize+picHeight+item.y);
+        }
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
+    }
+
+    function _drawControl(ctx,item){
+        var x = item.x;
+        var y = item.y;
+        if(item.isBottom){
+            y+=fontSize+paddingHeight;
+        }
+        var picWidth = iPar["control"].width;
+        var picHeight = iPar["control"].height;
+        if(item.width>picWidth){
+            x = item.x + (item.width-picWidth)/2;
+        }
+        ctx.save()
+        ctx.lineWidth=2
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        ctx.beginPath();
+        ctx.lineWidth=2
+
+        ctx.arc(x+13,y+19,13,0,2*Math.PI);
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.shadowBlur=0;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.arc(x+13,y+19,12,0,2*Math.PI);
+        ctx.fill();
+
+        ctx.beginPath()
+        ctx.fillStyle = strokeStyle;
+        ctx.moveTo(x+10,y+6);
+        ctx.lineTo(x+17,y+12);
+        ctx.lineTo(x+15,y+6);
+        ctx.lineTo(x+17,y);
+        ctx.closePath()
+        ctx.fill()
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath();
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        x=item.x;
+        var textWidth = ctx.measureText(item.title).width;
+        if(textWidth<picWidth){
+            x+= (picWidth-textWidth)/2;
+        }
+        ctx.fontSize = fontSize;
+        if(item.isBottom){
+            ctx.fillText(item.title,x,y-paddingHeight);
+        }else{
+            ctx.fillText(item.title,x,fontSize+picHeight+item.y);
+        }
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
+    }
+    
+    function _drawBoundary(ctx,item){
+        var x = item.x+1;
+        var y = item.y;
+        if(item.isBottom){
+            y+=fontSize+paddingHeight;
+        }
+        var picWidth = iPar["boundary"].width;
+        var picHeight = iPar["boundary"].height;
+        if(item.width>picWidth){
+            x = item.x + (item.width-picWidth)/2;
         }
         ctx.save()
         ctx.beginPath();
+        ctx.lineWidth=2
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        ctx.moveTo(x,y);
+        ctx.lineTo(x,y+24);
+        ctx.moveTo(x,y+12);
+        ctx.lineTo(x+17,y+12);
+        ctx.stroke()
+
+        ctx.beginPath();
+        ctx.lineWidth=2
+
+        ctx.arc(x+29,y+12,12,0,2*Math.PI);
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.shadowBlur=0;
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.arc(x+29,y+12,11,0,2*Math.PI);
+        ctx.fill();
+
+        ctx.restore()
+
+        ctx.save()
+        ctx.beginPath();
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        x=item.x;
+        var textWidth = ctx.measureText(item.title).width;
+        if(textWidth<picWidth){
+            x+= (picWidth-textWidth)/2;
+        }
+        ctx.fontSize = fontSize;
+        if(item.isBottom){
+            ctx.fillText(item.title,x,y-paddingHeight);
+        }else{
+            ctx.fillText(item.title,x,fontSize+picHeight+item.y);
+        }
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
+    }
+    function _drawActor(ctx,item){
+        var x = item.x+2;
+        var y = item.y;
+        if(item.isBottom){
+            y+=fontSize+paddingHeight;
+        }
+        var picWidth = iPar["actor"].width;
+        var picHeight = iPar["actor"].height;
+
+        if(item.width>picWidth){
+            x = item.x + (item.width-picWidth)/2;
+        }
+        ctx.save()
+        ctx.beginPath();
+        ctx.lineWidth=2
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+
         ctx.arc(x+15,y+8,8,0,2*Math.PI);
         ctx.fill();
         ctx.moveTo(x+15,y+16);
@@ -647,10 +882,14 @@ var NutUml;
         ctx.fillStyle = textFillStyle;
         x=item.x;
         var textWidth = ctx.measureText(item.title).width;
-        if(textWidth<ACTOR_WIDTH){
-            x+= (ACTOR_WIDTH-textWidth)/2;
+        if(textWidth<picWidth){
+            x+= (picWidth-textWidth)/2;
         }
-        ctx.fillText(item.title,x,fontSize+54+item.y+paddingHeight-1);
+        if(item.isBottom){
+            ctx.fillText(item.title,x,y-paddingHeight);
+        }else{
+            ctx.fillText(item.title,x,fontSize+picHeight+item.y);
+        }
         ctx.fill()
         ctx.stroke()
         ctx.restore()
@@ -1038,7 +1277,7 @@ var NutUml;
                                 multiLine = false;
                                 tokens.push({
                                     type: TYPE_MESSAGE,
-                                    value: message,
+                                    value: message.trimEnd(),
                                 });
                                 tokens.push({
                                     type: TYPE_RESERVED,
@@ -1174,5 +1413,3 @@ var NutUml;
     };
 
 })()
-
-export default NutUml;
