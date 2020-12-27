@@ -47,19 +47,24 @@
     
 new Vue({
     data: {
-        textarea: 'Alice->Bob : hello\n'
-                +'note left: this is a first note\n\n'
+        textarea: 'participant Alice\n'
+                +'participant Bob\n'
+                +'note left of Alice #aqua\n'
+                +'This is displayed\n'
+                +'left of Alice.\n'
+                +'end note\n'
 
-                +'Bob->Alice : ok\n'
-                +'note right: this is another note\n\n'
+                +'note right of Alice: This is displayed right of Alice.\n'
 
-                +'Bob->Bob : I am thinking\n'
-                +'note left\n'
-                +'a note\n'
-                +'can also be defined\n'
-                +'on several lines\n'
+                +'note over Alice: This is displayed over Alice.\n'
+
+                +'note over Alice, Bob #FFAAAA: This is displayed\\n over Bob and Alice.\n'
+
+                +'note over Bob, Alice\n'
+                +'This is yet another\n'
+                +'example of\n'
+                +'a long note.\n'
                 +'end note',
-        textarea2: '',
     },
     watch: {
         textarea: function(){

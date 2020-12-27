@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * NutUml version 0.2.1
+ * NutUml version 0.3.0
  */
 
 var NutUml;
@@ -39,6 +39,7 @@ var NutUml;
     const TYPE_SEPARATORS = 5;
     const TYPE_STRING = 6;
     const TYPE_SEPARATE_LINE = 7;
+    const TYPE_COMMA = 8;
     const ALT_HEIGHT = 10;
     const END_HEIGHT = 10;
 
@@ -53,6 +54,8 @@ var NutUml;
     const LINE_ELSE =4;
     const LINE_GROUP = 5;
     const LINE_END = 6;
+    const LINE_ONLY_NOTE =7;
+
     const GROUP_LINE_LEFT_PADDING = 30;
     const GROUP_GROUP_LEFT_PADDING = 10;
     const GROUP_LINE_RIGHT_PADDING = 20;
@@ -1144,6 +1147,143 @@ var NutUml;
                             continue;
                          }
                     }
+                    /** handle blow case
+                        note left of Alice #aqua
+                        This is displayed
+                        left of Alice.
+                        end note
+                     */
+                    if(cur+6<len){
+                        var noteDir = tokens[cur];
+                        var noteOf = tokens[cur+1];
+                        var noteWord = tokens[cur+2];
+                        var noteColor = tokens[cur+3];
+                        var noteMessage = tokens[cur+4];
+                        if( ("left" == noteDir.value || "right"==noteDir.value)
+                         && "of" == noteOf.value && noteWord.type == TYPE_WORD
+                         && noteMessage.type == TYPE_MESSAGE 
+                         && tokens[cur+5].value=='end' && tokens[cur+6].value=='note'){
+                            var noteItem = {
+                                "direction": noteDir.value,
+                                "message": noteMessage.value,
+                                "color": noteColor.value,
+                                "participant": noteWord.value
+                            }
+                            cur = cur+7;
+                            var lineObj = _getLineItem(LINE_ONLY_NOTE,"","ONLY_NOTE")
+                            lineObj.noteItem = noteItem;
+                            obj.lines.push(lineObj)
+                            continue;
+                         }
+                    }
+                    /** handle blow case
+                        note right of Alice: This is displayed right of Alice.
+                     */
+                    if(cur+4<len){
+                        var noteDir = tokens[cur];
+                        var noteOf = tokens[cur+1];
+                        var noteWord = tokens[cur+2];
+                        var noteSeprator = tokens[cur+3];
+                        var noteMessage = tokens[cur+4];
+                        if( ("left" == noteDir.value || "right"==noteDir.value)
+                         && "of" == noteOf.value && noteWord.type == TYPE_WORD
+                         && noteSeprator.type == TYPE_SEPARATORS
+                         && noteMessage.type == TYPE_MESSAGE ){
+                            var noteItem = {
+                                "direction": noteDir.value,
+                                "message": noteMessage.value,
+                                "participant": noteWord.value
+                            }
+                            cur = cur+5;
+                            var lineObj = _getLineItem(LINE_ONLY_NOTE,"","ONLY_NOTE")
+                            lineObj.noteItem = noteItem;
+                            obj.lines.push(lineObj)
+                            continue;
+                         }
+                    }
+                     /** handle blow case
+                        note over Alice: This is displayed over Alice.
+                     */
+                    if(cur+3<len){
+                        var noteOver = tokens[cur];
+                        var noteWord = tokens[cur+1];
+                        var noteSeprator = tokens[cur+2];
+                        var noteMessage = tokens[cur+3];
+                        if( "over" == noteOver.value && noteWord.type == TYPE_WORD
+                         && noteSeprator.type == TYPE_SEPARATORS
+                         && noteMessage.type == TYPE_MESSAGE ){
+                            var noteItem = {
+                                "direction": noteOver.value,
+                                "message": noteMessage.value,
+                                "participant": noteWord.value
+                            }
+                            cur = cur+4;
+                            var lineObj = _getLineItem(LINE_ONLY_NOTE,"","ONLY_NOTE")
+                            lineObj.noteItem = noteItem;
+                            obj.lines.push(lineObj)
+                            continue;
+                         }
+                    }
+                    /** handle blow case
+                        note over Alice, Bob #FFAAAA: This is displayed\n over Bob and Alice.
+                     */
+                    if(cur+6<len){
+                        var noteOver = tokens[cur];
+                        var noteWord = tokens[cur+1];
+                        var noteComma = tokens[cur+2];
+                        var noteWordTo = tokens[cur+3];
+                        var noteColor = tokens[cur+4];
+                        var noteSeprator = tokens[cur+5]
+                        var noteMessage = tokens[cur+6];
+                        if( "over" == noteOver.value && noteWord.type == TYPE_WORD
+                         && noteComma.type == TYPE_COMMA && noteWordTo.type == TYPE_WORD
+                         && noteSeprator.type == TYPE_SEPARATORS
+                         && noteMessage.type == TYPE_MESSAGE ){
+                            var noteItem = {
+                                "direction": noteOver.value,
+                                "message": noteMessage.value,
+                                "participant": noteWord.value,
+                                "color":noteColor.value,
+                                "participantTo": noteWordTo.value
+                            }
+                            cur = cur+7;
+                            var lineObj = _getLineItem(LINE_ONLY_NOTE,"","ONLY_NOTE")
+                            lineObj.noteItem = noteItem;
+                            obj.lines.push(lineObj)
+                            continue;
+                         }
+                    }
+
+                    /** handle blow case
+                        note over Bob, Alice
+                        This is yet another
+                        example of
+                        a long note.
+                        end note                     
+                    */
+                    if(cur+6<len){
+                        var noteOver = tokens[cur];
+                        var noteWord = tokens[cur+1];
+                        var noteComma = tokens[cur+2];
+                        var noteWordTo = tokens[cur+3];
+                        var noteMessage = tokens[cur+4];
+                        if( "over" == noteOver.value && noteWord.type == TYPE_WORD
+                         && noteComma.type == TYPE_COMMA && noteWordTo.type == TYPE_WORD
+                         && noteMessage.type == TYPE_MESSAGE 
+                         && tokens[cur+5].value == "end" && tokens[cur+6].value== "note"){
+                            var noteItem = {
+                                "direction": noteOver.value,
+                                "message": noteMessage.value,
+                                "participant": noteWord.value,
+                                "participantTo": noteWordTo.value
+                            }
+                            cur = cur+7;
+                            var lineObj = _getLineItem(LINE_ONLY_NOTE,"","ONLY_NOTE")
+                            lineObj.noteItem = noteItem;
+                            obj.lines.push(lineObj)
+                            continue;
+                         }
+                    }
                 }
                 if("autonumber"==item.value){
                     obj.autonumber = true
@@ -1359,6 +1499,9 @@ var NutUml;
         if(result){
             return result;
         }
+        if(c=='#'){
+            return true;
+        }
         return c.charCodeAt(0)>255;
     }
     NutUml.prototype.analysis = function(str) {
@@ -1437,7 +1580,9 @@ var NutUml;
                         value: word,
                     }); // 存储保留字(关键字)
                     if(multiLineWords.includes(word)){
-                        multiLineFlag = true;
+                        if(tokens[tokens.length-2].value!="end"){
+                            multiLineFlag = true;
+                        }
                     }
                     if(oneLineWords.includes(word)){
                         while(cur<str.length && /\s/.test(str[cur]) && !newLines.includes(str[cur])){
@@ -1481,6 +1626,11 @@ var NutUml;
                     type: TYPE_MESSAGE,
                     value: word,
                 }); 
+            } else if(','==str[cur]) {
+                tokens.push({
+                    type: TYPE_COMMA,
+                    value: str[cur++],
+                }); // 存储分隔符并将cur向右移动
             } else if(operators.includes(str[cur])) {
                 let operator = "" + str[cur++];
                 while(cur < str.length && operators.includes(str[cur])) {
