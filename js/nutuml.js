@@ -1533,3 +1533,6 @@ var NutUml;
     };
 
 })()
+if (typeof module !== 'undefined' && typeof exports === 'object') {
+    module.exports = NutUml;
+}
