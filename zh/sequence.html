@@ -183,7 +183,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>其他的注释(开发中...)</h4>
+            <h4>其他的注释</h4>
             <p>可以使用note left of，note right of或note over在节点(participant)的相对位置放置注释。<br>
                 还可以通过修改背景色来高亮显示注释。<br>
                 以及使用关键字end note来添加多行注释。
@@ -382,7 +382,7 @@ new Vue({
                 +'end note',
         textarea11:'participant Alice\n'
                 +'participant Bob\n'
-                +'note left of Alice #aqua\n'
+                +'note left of Alice aqua\n'
                 +'This is displayed\n'
                 +'left of Alice.\n'
                 +'end note\n'
@@ -539,12 +539,15 @@ new Vue({
             this.draw(this.$refs.canvas9,this.textarea9);
         },
         textarea10: function(){
-            this.draw(this.$refs.canvas10,this.textarea9);
+            this.draw(this.$refs.canvas10,this.textarea10);
+        },
+        textarea11: function(){
+            this.draw(this.$refs.canvas11,this.textarea11);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=10;i++){
+        for(var i=1;i<=11;i++){
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
         }
       /*  this.draw(this.$refs.canvas2,this.textarea2);

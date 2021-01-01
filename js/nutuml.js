@@ -236,13 +236,13 @@ var NutUml;
         var y = item.cornerY + NOTE_PADDING_TOP;
         var height = item.noteHeight - NOTE_PADDING_TOP - NOTE_PADDING_BOTTOM;
 
-       
+       var color = item.noteItem.color || NOTE_FILL_STYLE;
 
         // draw left, top
         ctx.save()
         ctx.beginPath()
         ctx.lineWidth=1;
-        ctx.fillStyle=NOTE_FILL_STYLE;
+        ctx.fillStyle=  color;
         ctx.strokeStyle=NOTE_STROKE_STYLE;
 
         ctx.moveTo(item.noteX, y+height); // left bottom
@@ -457,6 +457,10 @@ var NutUml;
                 }
             }else if(item.type == LINE_ELSE){
                 item.refItem = curGroupItem;
+            }else if(item.type == LINE_ONLY_NOTE){
+                item.noteX = _calcOnlyNote(item,obj);
+                minX = Math.min(minX,item.noteX);
+                maxX = Math.max(maxX,item.noteX+item.noteWidth+pagePadding);
             }
             if(item.type !==LINE_SEQUENCE){
                 continue;
@@ -502,6 +506,28 @@ var NutUml;
         if(minX<0){
             obj.tranlateX = Math.ceil(Math.abs(minX));
             obj.width += obj.tranlateX
+        }
+    }
+    function _calcOnlyNote(item,obj){
+        var fromParticipant, toParticipant;
+        for(var k=0;k<obj.participant.length;k++){
+            if(obj.participant[k].name == item.noteItem.participant){
+                fromParticipant = obj.participant[k];
+            }
+            if(obj.participant[k].name == item.noteItem.participantTo){
+                toParticipant = obj.participant[k];
+            }
+        }
+        if(toParticipant!==undefined){
+            return (toParticipant.lineX + fromParticipant.lineX)/2 - item.noteWidth/2
+        }else{
+            if("left"==item.noteItem.direction){
+                return fromParticipant.lineX - item.noteWidth - NOTE_MARGIN;
+            }else if("right"==item.noteItem.direction){
+                return fromParticipant.lineX + NOTE_MARGIN;
+            }else{
+                return fromParticipant.lineX - item.noteWidth/2;
+            }
         }
     }
     function _copyObj(obj){
@@ -593,6 +619,8 @@ var NutUml;
                 _separateLine(ctx,item,obj)
             }else if(item.type == LINE_ELSE){
                 _elseLine(ctx,item,obj)
+            }else if(item.type == LINE_ONLY_NOTE){
+                _noteRectangle(ctx,item)
             }
         }
     }
