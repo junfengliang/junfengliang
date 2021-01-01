@@ -543,11 +543,17 @@ new Vue({
         },
         textarea11: function(){
             this.draw(this.$refs.canvas11,this.textarea11);
+        },
+        textarea13: function(){
+            this.draw(this.$refs.canvas13,this.textarea13);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=11;i++){
+        for(var i=1;i<=13;i++){
+            if(i==12){ // 跳过暂未实现的项
+                continue;
+            }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
         }
       /*  this.draw(this.$refs.canvas2,this.textarea2);

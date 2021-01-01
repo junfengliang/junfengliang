@@ -48,23 +48,20 @@
 new Vue({
     data: {
         textarea: 'participant Alice\n'
-                +'participant Bob\n'
-                +'note left of Alice #aqua\n'
-                +'This is displayed\n'
-                +'left of Alice.\n'
-                +'end note\n'
+                +'actor Bob\n\n'
 
-                +'note right of Alice: This is displayed right of Alice.\n'
+                +'ref over Alice, Bob : init\n\n'
+                + 'ref over Alice : init222\n'
+                +'Alice -> Bob : hello\n\n'
 
-                +'note over Alice: This is displayed over Alice.\n'
-
-                +'note over Alice, Bob #FFAAAA: This is displayed\\n over Bob and Alice.\n'
-
-                +'note over Bob, Alice\n'
-                +'This is yet another\n'
-                +'example of\n'
-                +'a long note.\n'
-                +'end note',
+                +'ref over Bob\n'
+                +'  This can be on\n'
+                +'  several lines\n'
+                +'end ref\n'
+                +'ref over Alice, Bob\n'
+                +'  This can be on\n'
+                +'  several lines too\n'
+                +'end ref',
     },
     watch: {
         textarea: function(){
@@ -78,6 +75,7 @@ new Vue({
     methods: {
         draw: function(canvas,text){
             var nutuml = new NutUml(canvas);
+            nutuml.debug =true;
             nutuml.drawUml(text);
         }
     }

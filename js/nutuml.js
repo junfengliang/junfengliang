@@ -48,6 +48,9 @@ var NutUml;
     const TAB_MIN_TEXT_WIDTH = 40;
     const TAB_HEIGHT = 14;
 
+    const REF_MIN_WIDTH = 100;
+    const REF_HEIGHT = 36;
+
     const LINE_SEQUENCE = 1;
     const LINE_SEPRATE = 2;
     const LINE_ALT = 3;
@@ -55,6 +58,8 @@ var NutUml;
     const LINE_GROUP = 5;
     const LINE_END = 6;
     const LINE_ONLY_NOTE =7;
+    const LINE_REF =8;
+    const REF_PADDING = 20;
 
     const GROUP_LINE_LEFT_PADDING = 30;
     const GROUP_GROUP_LEFT_PADDING = 10;
@@ -77,10 +82,10 @@ var NutUml;
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
         'alt','else','opt','loop','par','break','critical','group','end','note',
-        'left','right','of','over'];
+        'left','right','of','over','ref'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const oneLineWords = ['title','header','footer','alt','else','opt','loop','par','break','critical','group'];
-    const multiLineWords = ['title','note'];
+    const multiLineWords = ['title','note','ref'];
     const groupWords = ['opt','loop','par','break','critical','group']
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
@@ -93,6 +98,15 @@ var NutUml;
         var frameY = item.cornerY + GROUP_PADDING;
         var frameHeight = item.height - GROUP_PADDING;
 
+        // fill for ref
+        if(item.type == LINE_REF){
+            ctx.save()
+            ctx.beginPath()
+            ctx.fillStyle = "#fff"
+            ctx.fillRect(item.x, frameY, item.width, frameHeight);
+            ctx.fill()
+            ctx.restore()
+        }
         // draw left, top
         ctx.save()
         ctx.beginPath()
@@ -130,7 +144,7 @@ var NutUml;
         var tabMeasure = _measureText(ctx,typeName,GROUP_TEXT_SIZE);
         var tabWidth = Math.max(tabMeasure.width,TAB_MIN_TEXT_WIDTH);
         tabWidth = tabWidth + TAB_LEFT_PADDING + TAB_RIGHT_PADDING;
-        var tabHeight = item.height -5;
+        var tabHeight = tabMeasure.height;
         var fillX = item.x +1;
         var fillY = frameY+1;
         //fill 
@@ -156,9 +170,17 @@ var NutUml;
         ctx.stroke();
         ctx.beginPath();
         ctx.restore()
-        if(item.message!=""){
+        if((item.type ==LINE_ALT || item.type==LINE_GROUP) &&  item.message!=""){
             var msg =  "[" + item.message  + "]"
             _drawGroupText(ctx,item.x +tabWidth +paddingWidth,frameY-2,msg,true)
+        }
+        if(item.type == LINE_REF){
+            ctx.font= font;
+            var txtObj = _measureText(ctx,item.message,fontSize);
+            var txtX = item.x + (item.width-txtObj.width)/2;
+            console.log("item.x=",item.x,",txtX=",txtX,"item.width=",item.width,"txtwidth=",txtObj.width)
+            var txtY = fillY + tabHeight + linePadding
+            _drawText(ctx,txtX,txtY,item.message,false);
         }
         _drawGroupText(ctx,item.x +paddingWidth,frameY-2,typeName,true)
 
@@ -337,6 +359,9 @@ var NutUml;
             item.width = obj.width + pw*2;
             if(item.type==LINE_ALT || item.type==LINE_GROUP){
                 item.height = obj.height + linePadding;
+            }else if(item.type == LINE_REF){
+                item.height = obj.height + linePadding + REF_HEIGHT;
+                item.width = Math.max(item.width,REF_MIN_WIDTH);
             }else if(item.type == LINE_END){
                 item.height = END_HEIGHT;
             }else{
@@ -369,10 +394,8 @@ var NutUml;
             if(arr[t]<minWidth){
                 arr[t]=minWidth;
             }
-            console.log(t + "=" + arr[t])
             obj.innerHeight += item.height
         }
-        console.log(arr);
         for(var i=0;i<len;i++){
             obj.maxParticipantHeight = Math.max(obj.participant[i].height,obj.maxParticipantHeight);
         }
@@ -461,6 +484,13 @@ var NutUml;
                 item.noteX = _calcOnlyNote(item,obj);
                 minX = Math.min(minX,item.noteX);
                 maxX = Math.max(maxX,item.noteX+item.noteWidth+pagePadding);
+            }else if(item.type == LINE_REF){
+                item.x = _calcRefX(item,obj);
+                item.toX = item.x + item.width;
+                item.toY = item.cornerY + item.height;
+
+                minX = Math.min(minX,item.x);
+                maxX = Math.max(maxX,item.toX+pagePadding);
             }
             if(item.type !==LINE_SEQUENCE){
                 continue;
@@ -506,6 +536,24 @@ var NutUml;
         if(minX<0){
             obj.tranlateX = Math.ceil(Math.abs(minX));
             obj.width += obj.tranlateX
+        }
+    }
+    function _calcRefX(item,obj){
+        var fromParticipant, toParticipant;
+        for(var k=0;k<obj.participant.length;k++){
+            if(obj.participant[k].name == item.from){
+                fromParticipant = obj.participant[k];
+            }
+            if(obj.participant[k].name == item.to){
+                toParticipant = obj.participant[k];
+            }
+        }
+        if(toParticipant!==undefined){
+            var w = Math.abs(toParticipant.lineX - fromParticipant.lineX) + REF_PADDING ;
+            item.width = Math.max(item.width,w);
+            return (toParticipant.lineX + fromParticipant.lineX)/2 - item.width/2
+        }else{
+            return fromParticipant.lineX - 20;
         }
     }
     function _calcOnlyNote(item,obj){
@@ -586,7 +634,6 @@ var NutUml;
 
             var headerX = obj.width - pagePadding - hObj.width;
             _drawText(ctx,headerX, pagePadding,obj.header,false);
-            debugger;
         }
         if(obj.footerHeight>0){
             ctx.font = font;
@@ -609,6 +656,10 @@ var NutUml;
             _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
         }
     }
+    function _drawRef(ctx,item){
+        
+        _groupRectangle(ctx,item)
+    }
     function _drawLines(ctx,obj){
         var len = obj.lines.length;
         for(var i=0;i<len;i++){
@@ -621,6 +672,8 @@ var NutUml;
                 _elseLine(ctx,item,obj)
             }else if(item.type == LINE_ONLY_NOTE){
                 _noteRectangle(ctx,item)
+            }else if(item.type == LINE_REF){
+                _drawRef(ctx,item)
             }
         }
     }
@@ -1106,6 +1159,91 @@ var NutUml;
             typeName: typeName
         }
     }
+    function _parseRef(tokens,obj,cur){
+        var len = tokens.length;
+
+        /* handle below case:
+                ref over Alice, Bob : init
+            */
+        if(cur+5<len){
+            var refFrom = tokens[cur+1];
+            var refTo = tokens[cur+3];
+
+            var refMessage = tokens[cur+5];
+
+            if("over"==tokens[cur].value && refFrom.type==TYPE_WORD
+                && tokens[cur+2].type == TYPE_COMMA && refTo.type==TYPE_WORD
+                && tokens[cur+4].value == ":" && refMessage.type ==TYPE_MESSAGE
+            ){
+                    var lineObj = _getLineItem(LINE_REF,refMessage.value,"REF")
+                    lineObj.from = refFrom.value;
+                    lineObj.to = refTo.value;
+                    obj.lines.push(lineObj)
+                return cur+6
+            }
+        }
+        /* handle below case:
+            ref over Alice : init
+            */
+        if(cur+3<len){
+            var refFrom = tokens[cur+1];
+            var refMessage = tokens[cur+3];
+
+            if("over"==tokens[cur].value && refFrom.type==TYPE_WORD
+            && tokens[cur+2].value == ":" && refMessage.type ==TYPE_MESSAGE
+            ){
+                var lineObj = _getLineItem(LINE_REF,refMessage.value,"REF")
+                lineObj.from = refFrom.value;
+                obj.lines.push(lineObj)
+                return cur+4
+            }
+        }
+            /* handle below case:
+            ref over Bob
+            This can be on
+            several lines
+            end ref
+            */
+        if(cur+4<len){
+            var refFrom = tokens[cur+1];
+
+            var refMessage = tokens[cur+2];
+
+            if("over"==tokens[cur].value && refFrom.type==TYPE_WORD
+             && refMessage.type ==TYPE_MESSAGE && tokens[cur+3].value=="end"
+             && tokens[cur+4].value=="ref"
+            ){
+                var lineObj = _getLineItem(LINE_REF,refMessage.value,"REF")
+                lineObj.from = refFrom.value;
+                obj.lines.push(lineObj)
+                return cur+5
+            }
+        }
+        /* handle below case:
+            ref over Alice, Bob
+            This can be on
+            several lines
+            end ref
+            */
+           if(cur+6<len){
+            var refFrom = tokens[cur+1];
+            var refTo = tokens[cur+3];
+
+            var refMessage = tokens[cur+4];
+
+            if("over"==tokens[cur].value && refFrom.type==TYPE_WORD
+             && tokens[cur+2].type==TYPE_COMMA && refFrom.type==TYPE_WORD
+             && refMessage.type ==TYPE_MESSAGE && tokens[cur+5].value=="end"
+             && tokens[cur+6].value=="ref"
+            ){
+                var lineObj = _getLineItem(LINE_REF,refMessage.value,"REF")
+                lineObj.from = refFrom.value;
+                lineObj.to = refTo.value;
+                obj.lines.push(lineObj)
+                return cur+7
+            }
+        }
+    }
     function _getObj(tokens){
         var obj = {
             participant : [],
@@ -1129,6 +1267,10 @@ var NutUml;
         while(cur<len){
             var item = tokens[cur++];
             if(item.type==TYPE_RESERVED){
+                if("ref"==item.value){
+                    cur = _parseRef(tokens,obj,cur)
+                    continue;
+                }
                 if("note"==item.value){
                     // handle two case
                     //note left: this is a first note
@@ -1485,19 +1627,23 @@ var NutUml;
         this.img = img;
         this.canvas = canvas;
         this.tokens = [];
+        this.debug = false;
     };
-    
 
     NutUml.prototype.drawUml = function(text){
         var ana = this.analysis(text);
-        console.log(ana)
+        if(this.debug){
+            console.log(ana)
+        }
         if(ana instanceof Array){
             this.tokens = ana;
         }else{
             return ana;
         }
         var secObj = _getObj(this.tokens);
-        console.log(secObj)
+        if(this.debug){
+            console.log(secObj)
+        }
         var ctx= this.context;
         ctx.lineWidth=1;
         
