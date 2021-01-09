@@ -47,21 +47,11 @@
     
 new Vue({
     data: {
-        textarea: 'participant Alice\n'
-                +'actor Bob\n\n'
-
-                +'ref over Alice, Bob : init\n\n'
-                + 'ref over Alice : init222\n'
-                +'Alice -> Bob : hello\n\n'
-
-                +'ref over Bob\n'
-                +'  This can be on\n'
-                +'  several lines\n'
-                +'end ref\n'
-                +'ref over Alice, Bob\n'
-                +'  This can be on\n'
-                +'  several lines too\n'
-                +'end ref',
+        textarea: 'Alice -> Bob: Authentication Request\n'
+                +'...\n'
+                +'Bob --> Alice: Authentication Response\n'
+                +'...5 minutes latter...\n'
+                +'Bob --> Alice: Bye !',
     },
     watch: {
         textarea: function(){

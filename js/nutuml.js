@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * NutUml version 0.3.0
+ * NutUml version 0.4.0
  */
 
 var NutUml;
@@ -40,6 +40,8 @@ var NutUml;
     const TYPE_STRING = 6;
     const TYPE_SEPARATE_LINE = 7;
     const TYPE_COMMA = 8;
+    const TYPE_DELAY = 9;
+
     const ALT_HEIGHT = 10;
     const END_HEIGHT = 10;
 
@@ -59,6 +61,7 @@ var NutUml;
     const LINE_END = 6;
     const LINE_ONLY_NOTE =7;
     const LINE_REF =8;
+    const LINE_DELAY =9;
     const REF_PADDING = 20;
 
     const GROUP_LINE_LEFT_PADDING = 30;
@@ -364,6 +367,12 @@ var NutUml;
                 item.width = Math.max(item.width,REF_MIN_WIDTH);
             }else if(item.type == LINE_END){
                 item.height = END_HEIGHT;
+            }else if(item.type == LINE_DELAY){
+                if(""==item.message.trim()){
+                    item.height = 25;
+                }else{
+                    item.height = 40;
+                }
             }else{
                 item.height = obj.height + linePadding;
             }
@@ -548,6 +557,9 @@ var NutUml;
                 toParticipant = obj.participant[k];
             }
         }
+        if(fromParticipant==undefined){
+            return 0;
+        }
         if(toParticipant!==undefined){
             var w = Math.abs(toParticipant.lineX - fromParticipant.lineX) + REF_PADDING ;
             item.width = Math.max(item.width,w);
@@ -584,6 +596,29 @@ var NutUml;
             if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
         }
         return copy;
+    }
+    function _delayLine(ctx,x,y,toX,toY,arr){
+        var yPadding =10;
+        _realLine(ctx,x,y,toX,arr[0].from + yPadding)
+        
+        for(var i=0;i<arr.length;i++){
+            if(i>=1){
+                _realLine(ctx,x,arr[i-1].to + yPadding,toX,arr[i].from + yPadding);
+            }
+            _dotedLine(ctx,x,arr[i].from + yPadding ,toX,arr[i].to + yPadding);
+
+        }
+        _realLine(ctx,x,arr[arr.length-1].to + yPadding,toX,toY)
+    }
+    function _dotedLine(ctx, x, y, toX, toY){
+        ctx.save()
+        ctx.beginPath()
+        ctx.setLineDash([1,4])
+        ctx.moveTo(x,y)
+        ctx.lineTo(toX,toY)
+        ctx.stroke()
+        ctx.fill()
+        ctx.restore()
     }
     function _dashedLine(ctx, x, y, toX, toY){
         ctx.save()
@@ -644,6 +679,8 @@ var NutUml;
     }
     function _drawParticipant(ctx,obj){
         var len = obj.participant.length;
+        var delayArr = _patchDelay(obj);
+        
         for(var i=0;i<len;i++){
             var item = obj.participant[i];
             _drawOneParticipant(ctx,item);
@@ -653,8 +690,23 @@ var NutUml;
             if(!obj.hideFootbox){
                 _drawOneParticipant(ctx,bottom);
             }
-            _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
+            if(delayArr.length>0){
+                _delayLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y,delayArr);
+            }else{
+                _dashedLine(ctx,item.lineX,item.lineY,item.lineX,bottom.y);
+            }
         }
+    }
+    function _patchDelay(obj){
+        var len = obj.lines.length;
+        var arr = []
+        for(var i=0;i<len;i++){
+            var line = obj.lines[i];
+            if(line.type==LINE_DELAY){
+                arr.push({from:line.cornerY, to: line.cornerY+line.height})
+            }
+        }
+        return arr;
     }
     function _drawRef(ctx,item){
         
@@ -674,8 +726,18 @@ var NutUml;
                 _noteRectangle(ctx,item)
             }else if(item.type == LINE_REF){
                 _drawRef(ctx,item)
+            }else if(item.type == LINE_DELAY){
+                _drawDelay(ctx,item,obj.width)
             }
         }
+    }
+    function _drawDelay(ctx,item,objWidth){
+        if(item.message.trim()==""){
+            return;
+        }
+        var mObj = _measureText(ctx,item.message,fontSize);
+        var x = (objWidth - mObj.width)/2 - NOTE_PADDING_LEFT;
+        _drawText(ctx,x,item.lineY+20, item.message);
     }
     function _drawGroupAlt(ctx,obj){
         var len = obj.lines.length;
@@ -1537,6 +1599,10 @@ var NutUml;
                     }
                 }
             }
+            if(item.type==TYPE_DELAY){
+                obj.lines.push(_getLineItem(LINE_DELAY,item.value,"DELAY"));
+                continue
+            }
             if(item.type==TYPE_WORD || item.type==TYPE_STRING|| item.type==TYPE_SEPARATE_LINE){
                 var lineItem = {
                     from:"",
@@ -1805,6 +1871,28 @@ var NutUml;
                     type: TYPE_COMMA,
                     value: str[cur++],
                 }); // 存储分隔符并将cur向右移动
+            } else if('.'==str[cur]) {
+                let word = ".";
+                var message = "";
+                if(cur+2 < str.length && '.'==str[cur+1] && '.'==str[cur+2]) {
+                    cur=cur+3;
+                    while(cur<str.length){
+                        if('.'==str[cur] && cur+2 < str.length && '.'==str[cur+1] && '.'==str[cur+2]){
+                            cur=cur+3
+                            break;
+                        }
+                        if('\n'==str[cur]){
+                            break;
+                        }
+                        message += str[cur++]
+                    }
+                }else{
+                    return "syntax error"
+                }
+                tokens.push({
+                    type: TYPE_DELAY,
+                    value: message,
+                }); // 存储分隔符并将cur向右移动
             } else if(operators.includes(str[cur])) {
                 let operator = "" + str[cur++];
                 while(cur < str.length && operators.includes(str[cur])) {
@@ -1848,7 +1936,7 @@ var NutUml;
                     return "syntax error"
                 }
             }else {
-                return "包含非法字符：" + str[cur];
+                return "syntax error：" + str[cur];
             }
 
         }
