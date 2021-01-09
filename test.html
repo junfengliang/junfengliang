@@ -47,11 +47,14 @@
     
 new Vue({
     data: {
-        textarea: 'Alice -> Bob: Authentication Request\n'
-                +'...\n'
-                +'Bob --> Alice: Authentication Response\n'
-                +'...5 minutes latter...\n'
-                +'Bob --> Alice: Bye !',
+        textarea: 'Alice -> Bob: message 1\n'
+                +'Bob --> Alice: ok\n'
+                +'|||\n'
+                +'Alice -> Bob: message 2\n'
+                +'Bob --> Alice: ok\n'
+                +'||45||\n'
+                +'Alice -> Bob: message 3\n'
+                +'Bob --> Alice: ok',
     },
     watch: {
         textarea: function(){

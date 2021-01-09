@@ -41,6 +41,7 @@ var NutUml;
     const TYPE_SEPARATE_LINE = 7;
     const TYPE_COMMA = 8;
     const TYPE_DELAY = 9;
+    const TYPE_SPACE =10;
 
     const ALT_HEIGHT = 10;
     const END_HEIGHT = 10;
@@ -62,6 +63,7 @@ var NutUml;
     const LINE_ONLY_NOTE =7;
     const LINE_REF =8;
     const LINE_DELAY =9;
+    const LINE_SPACE =10;
     const REF_PADDING = 20;
 
     const GROUP_LINE_LEFT_PADDING = 30;
@@ -367,6 +369,13 @@ var NutUml;
                 item.width = Math.max(item.width,REF_MIN_WIDTH);
             }else if(item.type == LINE_END){
                 item.height = END_HEIGHT;
+            }else if(item.type == LINE_SPACE){
+                var h = parseInt(item.message);
+                if(h>0){
+                    item.height=h;
+                }else{
+                    item.height = obj.height;
+                }
             }else if(item.type == LINE_DELAY){
                 if(""==item.message.trim()){
                     item.height = 25;
@@ -1602,6 +1611,9 @@ var NutUml;
             if(item.type==TYPE_DELAY){
                 obj.lines.push(_getLineItem(LINE_DELAY,item.value,"DELAY"));
                 continue
+            }else if(item.type==TYPE_SPACE){
+                obj.lines.push(_getLineItem(LINE_SPACE,item.value,"SPACE"));
+                continue
             }
             if(item.type==TYPE_WORD || item.type==TYPE_STRING|| item.type==TYPE_SEPARATE_LINE){
                 var lineItem = {
@@ -1872,7 +1884,6 @@ var NutUml;
                     value: str[cur++],
                 }); // 存储分隔符并将cur向右移动
             } else if('.'==str[cur]) {
-                let word = ".";
                 var message = "";
                 if(cur+2 < str.length && '.'==str[cur+1] && '.'==str[cur+2]) {
                     cur=cur+3;
@@ -1891,6 +1902,30 @@ var NutUml;
                 }
                 tokens.push({
                     type: TYPE_DELAY,
+                    value: message,
+                }); // 存储分隔符并将cur向右移动
+            }else if('|'==str[cur]) {
+                var message = "";
+                if(cur+2 < str.length && '|'==str[cur+1] && '|'==str[cur+2]) {
+                    //  match |||
+                    cur=cur+3;
+                }else if(cur +1<str.length && '|'==str[cur+1]){
+                    cur+=2;
+                    while(cur<str.length){
+                        if('|'==str[cur] && cur+1 < str.length && '|'==str[cur+1]){
+                            cur=cur+2
+                            break;
+                        }
+                        if('\n'==str[cur]){
+                            break;
+                        }
+                        message += str[cur++]
+                    }
+                }else{
+                    return "syntax error"
+                }
+                tokens.push({
+                    type: TYPE_SPACE,
                     value: message,
                 }); // 存储分隔符并将cur向右移动
             } else if(operators.includes(str[cur])) {
