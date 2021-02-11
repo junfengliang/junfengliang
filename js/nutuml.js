@@ -75,7 +75,10 @@ var NutUml;
     const NOTE_PADDING_BOTTOM = 5;
     const NOTE_PADDING_RIGHT = 15;
     const NOTE_MARGIN = 10;
-//, 'collections'
+
+    const ACTIVE_WIDTH = 10;
+
+    //, 'collections'
     const iParticipant = ['actor', 'boundary', 'control', 'entity', 'database'];
     const iPar = {
         actor: { width: 34, height: 54 },
@@ -234,6 +237,33 @@ var NutUml;
 
         _drawText(ctx,item.x+paddingWidth,item.y+4,item.title,true)
         
+    }
+    function _activeRectangle(ctx,item){
+        ctx.save()
+        ctx.beginPath()
+        ctx.shadowBlur=3;
+        ctx.shadowOffsetX=4;
+        ctx.shadowOffsetY=4;
+        ctx.shadowColor= shadowColor;
+
+        var x = item.x-ACTIVE_WIDTH/2;
+        var y =  item.topY;
+        var w = ACTIVE_WIDTH;
+        var h = item.bottomY - item.topY;
+
+        ctx.fillStyle= "#ffffff";
+        ctx.fillRect(x,y,w,h);
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+
+        ctx.fillRect(x,y,w,h);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(x,y,w,h);
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
     }
     function _rectangle(ctx,item){
         ctx.save()
@@ -721,6 +751,11 @@ var NutUml;
     function _drawRef(ctx,item){
         
         _groupRectangle(ctx,item)
+    }
+    function _drawActive(ctx,obj){
+        for(var i=0;i<obj.activeLines.length;i++){
+            _activeRectangle(ctx,obj.activeLines[i]);
+        }
     }
     function _drawLines(ctx,obj){
         var len = obj.lines.length;
@@ -1341,6 +1376,7 @@ var NutUml;
         var obj = {
             participant : [],
             lines : [],
+            activeLines : [],
             innerHeight:0,
             width:0,
             height:0,
@@ -1714,6 +1750,57 @@ var NutUml;
         }
         return obj;
     }
+    function _getParByName(obj,name){
+        for(var i=0;i<obj.participant.length;i++){
+            if(name== obj.participant[i].name){
+                return obj.participant[i];
+            }
+        }
+        return undefined;
+    }
+    function _calcActiveOne(line,doc,j,obj){
+        var item = line.active[j];
+        var arr = doc[item.participant];
+        var par = _getParByName(obj,item.participant);
+        if(par===undefined){
+            console.log("undefined" + item.participant)
+            return;
+        }
+        var y = line.y;
+        if(item.type=="activate"){
+            if(arr === undefined){
+                arr = []
+                arr.push({x:par.lineX,topY:y})
+                doc[item.participant]=arr;
+            }else{
+                var lineX = arr[arr.length-1].x + ACTIVE_WIDTH/2
+                arr.push({x:lineX,topY:y})
+            }
+        }else{
+            
+            var one = arr.pop();
+            if(one === undefined){
+                //error
+                return;
+            }
+            one.bottomY = y;
+            one.type = item.type;
+            return one;
+        }
+    }
+    function _calcActiveLines(obj){
+        var doc = [];
+        for(var i=0;i<obj.lines.length;i++){
+            var line = obj.lines[i];
+            for(var j=0;j<line.active.length;j++){
+                var one= _calcActiveOne(line,doc,j,obj)
+                if(one !== undefined){
+                    obj.activeLines.push(one);
+                }
+            }
+        }
+        obj.activeLines.reverse();
+    }
     
     NutUml = function (el) {
         this.el = el;
@@ -1751,6 +1838,7 @@ var NutUml;
         _calcLineSize(ctx,secObj.lines);
         _calcParticipantXY(secObj);
         _calcLinesXY(secObj);
+        _calcActiveLines(secObj);
 
         this.canvas.width = secObj.width;
         this.canvas.height = secObj.height;
@@ -1762,6 +1850,7 @@ var NutUml;
         }
         _drawParticipant(ctx,secObj);
         _drawGroupAlt(ctx,secObj);
+        _drawActive(ctx,secObj);
         _drawLines(ctx,secObj);
         this.img.src=this.canvas.toDataURL();
         return "";
