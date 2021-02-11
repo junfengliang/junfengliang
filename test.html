@@ -47,14 +47,23 @@
     
 new Vue({
     data: {
-        textarea: 'Alice -> Bob: message 1\n'
-                +'Bob --> Alice: ok\n'
-                +'|||\n'
-                +'Alice -> Bob: message 2\n'
-                +'Bob --> Alice: ok\n'
-                +'||45||\n'
-                +'Alice -> Bob: message 3\n'
-                +'Bob --> Alice: ok',
+        textarea: 'participant User\n'
+                +'User -> A: DoWork\n'
+                +'activate A\n'
+
+                +'A -> B: << createRequest >>\n'
+                +'activate B\n'
+
+                +'B -> C: DoWork\n'
+                +'activate C\n'
+                +'C --> B: WorkDone\n'
+                +'destroy C\n'
+
+                +'B --> A: RequestCreated\n'
+                +'deactivate B\n'
+
+                +'A -> User: Done\n'
+                +'deactivate A',
     },
     watch: {
         textarea: function(){

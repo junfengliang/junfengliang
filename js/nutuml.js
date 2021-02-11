@@ -87,10 +87,11 @@ var NutUml;
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
         'alt','else','opt','loop','par','break','critical','group','end','note',
-        'left','right','of','over','ref'];
+        'left','right','of','over','ref','activate','deactivate','destroy'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const oneLineWords = ['title','header','footer','alt','else','opt','loop','par','break','critical','group'];
     const multiLineWords = ['title','note','ref'];
+    const activeWords = ['activate','deactivate','destroy'];
     const groupWords = ['opt','loop','par','break','critical','group']
     const operators = ['-','>','<','->', '-->','<-','<--'];
     const fromOperators = ['->', '-->'];
@@ -1227,7 +1228,8 @@ var NutUml;
             operator: "",
             number:0,
             type: lineType,
-            typeName: typeName
+            typeName: typeName,
+            active:[]
         }
     }
     function _parseRef(tokens,obj,cur){
@@ -1314,6 +1316,26 @@ var NutUml;
                 return cur+7
             }
         }
+    }
+    function isActive(val){
+        return activeWords.includes(val);
+    }
+    function handleActive(obj,token,cur,val){
+
+        var item = token[cur++];
+        if(item.type==TYPE_WORD){
+            if(obj.lines.length>0){
+                obj.lines[obj.lines.length-1].active.push({
+                    "type":val,
+                    "participant":item.value
+                })
+            }else{
+                //todo syntax error
+            }
+        }else{
+            // todo syntax error
+        }
+        return cur;
     }
     function _getObj(tokens){
         var obj = {
@@ -1536,6 +1558,10 @@ var NutUml;
                         obj.title = opItem.value;
                     }
                 }
+                if(isActive(item.value)){
+                    cur = handleActive(obj,tokens,cur,item.value)
+                    continue;
+                }
                 if("header"==item.value){
                     var opItem = tokens[cur++];
                     if(opItem.type == TYPE_MESSAGE){
@@ -1616,14 +1642,8 @@ var NutUml;
                 continue
             }
             if(item.type==TYPE_WORD || item.type==TYPE_STRING|| item.type==TYPE_SEPARATE_LINE){
-                var lineItem = {
-                    from:"",
-                    to: "",
-                    message: "",
-                    operator: "",
-                    number:0,
-                    type:LINE_SEQUENCE
-                }
+                var lineItem = _getLineItem(LINE_SEQUENCE,"","SEQUENCE");
+                
                 if(item.type==TYPE_SEPARATE_LINE){
                     lineItem.type = LINE_SEPRATE
                     lineItem.message = item.value;
