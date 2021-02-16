@@ -1758,6 +1758,37 @@ var NutUml;
         }
         return undefined;
     }
+    function _patchLine(line,doc){
+        var fromArr = doc[line.from];
+        var toArr = doc[line.to];
+
+        if(line.from==="" && line.to===""){
+            return;
+        }
+        if(line.from===line.to){
+            // self
+            if(fromArr!== undefined && fromArr.length>0){
+                line.x += fromArr.length * ACTIVE_WIDTH/2 
+                line.toX += fromArr.length * ACTIVE_WIDTH/2 
+            }
+        }
+        if(line.x<line.toX){
+            if(fromArr!== undefined && fromArr.length>0){
+                line.x += fromArr.length * ACTIVE_WIDTH/2 
+            }
+            if(toArr!== undefined && toArr.length>0){
+                line.toX = line.toX + (toArr.length-2) * ACTIVE_WIDTH/2
+            }
+        }else if(line.x>line.toX){
+            if(fromArr!== undefined && fromArr.length>0){
+                line.x += fromArr.length * ACTIVE_WIDTH/2 
+            }
+            if(toArr!== undefined && toArr.length>0){
+                line.toX += (toArr.length) * ACTIVE_WIDTH/2
+            }
+        }
+    }
+
     function _calcActiveOne(line,doc,j,obj){
         var item = line.active[j];
         var arr = doc[item.participant];
@@ -1776,8 +1807,10 @@ var NutUml;
                 var lineX = arr[arr.length-1].x + ACTIVE_WIDTH/2
                 arr.push({x:lineX,topY:y})
             }
+            _patchLine(line,doc)
         }else{
-            
+            _patchLine(line,doc)
+
             var one = arr.pop();
             if(one === undefined){
                 //error
@@ -1792,11 +1825,15 @@ var NutUml;
         var doc = [];
         for(var i=0;i<obj.lines.length;i++){
             var line = obj.lines[i];
-            for(var j=0;j<line.active.length;j++){
-                var one= _calcActiveOne(line,doc,j,obj)
-                if(one !== undefined){
-                    obj.activeLines.push(one);
+            if(line.active.length>0){
+                for(var j=0;j<line.active.length;j++){
+                    var one= _calcActiveOne(line,doc,j,obj)
+                    if(one !== undefined){
+                        obj.activeLines.push(one);
+                    }
                 }
+            }else{
+                _patchLine(line,doc)
             }
         }
         obj.activeLines.reverse();
