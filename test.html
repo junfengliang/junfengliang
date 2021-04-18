@@ -48,20 +48,15 @@
 new Vue({
     data: {
         textarea: 'participant User\n'
-                +'User -> A: DoWork\n'
-                +'activate A\n'
-
-                +'A -> B: << createRequest >>\n'
+                +'User -> A: DoWork\n\n'
+                +'activate A #FFBBBB\n'
+                +'A -> A: Internal call\n\n'
+                +'activate A #DarkSalmon\n'
+                +'A -> B: << createRequest >>\n\n'
                 +'activate B\n'
-
-                +'B -> C: DoWork\n'
-                +'activate C\n'
-                +'C --> B: WorkDone\n'
-                +'destroy C\n'
-
                 +'B --> A: RequestCreated\n'
                 +'deactivate B\n'
-
+                +'deactivate A\n'
                 +'A -> User: Done\n'
                 +'deactivate A',
     },

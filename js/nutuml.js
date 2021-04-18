@@ -1355,9 +1355,26 @@ var NutUml;
     function isActive(val){
         return activeWords.includes(val);
     }
+    function isColor(val){
+        if(val===undefined){
+            return false
+        }
+        return val[0]==='#';
+    }
     function handleActive(obj,token,cur,val){
 
         var item = token[cur++];
+        var colorWord = token[cur];
+        if(colorWord!== undefined &&  isColor(colorWord.value)){
+            if(obj.lines.length>0){
+                obj.lines[obj.lines.length-1].active.push({
+                    "type":val,
+                    "participant":item.value,
+                    "color":colorWord.value
+                })
+            }
+            return cur+1;
+        }
         if(item.type==TYPE_WORD){
             if(obj.lines.length>0){
                 obj.lines[obj.lines.length-1].active.push({
@@ -1769,7 +1786,7 @@ var NutUml;
             // self
             if(fromArr!== undefined && fromArr.length>0){
                 line.x += fromArr.length * ACTIVE_WIDTH/2 
-                line.toX += fromArr.length * ACTIVE_WIDTH/2 
+                line.toX += toArr.length* ACTIVE_WIDTH/2 
             }
         }
         if(line.x<line.toX){
@@ -1784,7 +1801,7 @@ var NutUml;
                 line.x += fromArr.length * ACTIVE_WIDTH/2 
             }
             if(toArr!== undefined && toArr.length>0){
-                line.toX += (toArr.length) * ACTIVE_WIDTH/2
+                line.toX +=  ACTIVE_WIDTH/2
             }
         }
     }

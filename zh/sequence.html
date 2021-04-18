@@ -552,11 +552,17 @@ new Vue({
         },
         textarea16: function(){
             this.draw(this.$refs.canvas16,this.textarea16);
+        },
+        textarea17: function(){
+            this.draw(this.$refs.canvas16,this.textarea17);
+        },
+        textarea18: function(){
+            this.draw(this.$refs.canvas16,this.textarea18);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=16;i++){
+        for(var i=1;i<=18;i++){
             if(i==12 || i==15){ // 跳过暂未实现的项
                 continue;
             }
