@@ -567,15 +567,17 @@ var NutUml;
             }
 
             if(curGroupItem!=undefined){
+                var minVal = Math.min(item.x,item.toX);
+                var maxVal = Math.max(item.x,item.toX);
                 if(curGroupItem.x==undefined){
-                    curGroupItem.x = item.x - GROUP_LINE_LEFT_PADDING
+                    curGroupItem.x = minVal - GROUP_LINE_LEFT_PADDING
                 }else{
-                    curGroupItem.x = Math.min(item.x - GROUP_LINE_LEFT_PADDING,curGroupItem.x)
+                    curGroupItem.x = Math.min(minVal - GROUP_LINE_LEFT_PADDING,curGroupItem.x)
                 }
                 if(curGroupItem.toX == undefined){
-                    curGroupItem.toX = item.toX + GROUP_LINE_RIGHT_PADDING
+                    curGroupItem.toX = maxVal + GROUP_LINE_RIGHT_PADDING
                 }else{
-                    curGroupItem.toX = Math.max(item.toX + GROUP_LINE_RIGHT_PADDING,curGroupItem.toX)
+                    curGroupItem.toX = Math.max(maxVal + GROUP_LINE_RIGHT_PADDING,curGroupItem.toX)
                 }
             }
         }
