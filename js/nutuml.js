@@ -1677,6 +1677,37 @@ var NutUml;
                 }
                 if(participantWords.includes(item.value)){
                     var opItem = tokens[cur++];
+                    if(cur+1<len){
+                        var asItem = tokens[cur];
+                        var valItem = tokens[cur+1];
+                      
+                        if(opItem.type == TYPE_WORD && asItem.value=="as" && valItem.type == TYPE_STRING){
+                            // case 
+                            // participant User as "aaa"
+                            obj.participant.push({ 
+                                name:opItem.value, 
+                                title:valItem.value, 
+                                type:item.value 
+                            });
+                            participantArr.push(opItem.value);
+                            cur +=2
+                            continue
+                        }else if(opItem.type == TYPE_STRING && asItem.value=="as" && valItem.type == TYPE_WORD){
+                             // case 
+                            // participant "aaa" as user
+                            obj.participant.push({ 
+                                name:valItem.value, 
+                                title:opItem.value, 
+                                type:item.value 
+                            });
+                            participantArr.push(valItem.value);
+                            cur +=2
+                            continue
+                        }
+                    }
+                    
+                    // case participant User
+
                     if(opItem.type == TYPE_WORD){
                         obj.participant.push({ 
                             name:opItem.value, 
@@ -1684,6 +1715,7 @@ var NutUml;
                             type:item.value 
                         });
                         participantArr.push(opItem.value);
+                        continue
                     }
                 }
             }
