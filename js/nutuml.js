@@ -384,8 +384,9 @@ var NutUml;
             _oneParticipantSize(ctx,item);
         }
     }
-    function _calcLineSize(ctx,lines){
+    function _calcLineSize(ctx,secObj){
         ctx.font = font;
+        var lines = secObj.lines;
         var len = lines.length;
         var pw = paddingWidth;
 
@@ -393,6 +394,10 @@ var NutUml;
             var item = lines[i];
             var obj = _measureText(ctx,item.message);
             item.width = obj.width + pw*2;
+            if(secObj.autonumber){
+                var numObj = _measureText(ctx,"99 ");
+                item.width += numObj.width;
+            }
             if(item.type==LINE_ALT || item.type==LINE_GROUP){
                 item.height = obj.height + linePadding;
             }else if(item.type == LINE_REF){
@@ -427,6 +432,27 @@ var NutUml;
                 item.height = Math.max(item.lineHeight,item.noteHeight);
             }
         }
+    }
+    function _calcCrossSpan(obj,i,arr){
+        if(i<2)return 0;
+        var preItem = obj.participant[i-1];
+        var crossSpan =0;
+        var item = obj.participant[i]
+        for(var j=0;j<i-1;j++){
+            var crossItem = obj.participant[j];
+            var val = crossItem.name + "_" + item.name;
+            var val2 = item.name + "_" + crossItem.name;
+            var span = 0;
+            if(arr[val] !== undefined){
+                span = Math.max(span,arr[val])
+            }
+            if(arr[val2] !== undefined){
+                span = Math.max(span,arr[val2])
+            }
+            span = span - (preItem.x-crossItem.x)
+            crossSpan = Math.max(crossSpan,span) 
+        }
+        return crossSpan
     }
     function _calcParticipantXY(obj){
         obj.innerHeight = 0;
@@ -468,6 +494,8 @@ var NutUml;
             if(arr[val2] !== undefined){
                 span = Math.max(span,arr[val2])
             }
+            var crossSpan = _calcCrossSpan(obj,i,arr);
+            span = Math.max(span,crossSpan);
             item.x = preItem.x + span;
             
             item.y = picPadding + obj.maxParticipantHeight - item.height;
@@ -1850,7 +1878,7 @@ var NutUml;
         }
         var y = line.y;
         if(item.type=="activate"){
-            if(arr === undefined){
+            if(arr === undefined || arr.length==0){
                 arr = []
                 arr.push({x:par.lineX,topY:y})
                 doc[item.participant]=arr;
@@ -1923,7 +1951,7 @@ var NutUml;
 
         _calcObjSize(ctx,secObj);
         _calcParticipantSize(ctx,secObj.participant);
-        _calcLineSize(ctx,secObj.lines);
+        _calcLineSize(ctx,secObj);
         _calcParticipantXY(secObj);
         _calcLinesXY(secObj);
         _calcActiveLines(secObj);
