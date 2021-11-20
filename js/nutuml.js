@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * NutUml version 0.4.0
+ * NutUml version 0.5.0
  */
 
 var NutUml;
