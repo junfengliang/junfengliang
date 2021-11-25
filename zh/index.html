@@ -4,11 +4,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NutUml在线工具</title>
+    <title>NutUml时序图</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
 <script src="../js/nutuml.js"></script>
+<style>
+@media (min-width: 768px ) {
+  .row {
+      position: relative;
+  }
+}
+</style>
 
 </head>
 <body>
@@ -25,30 +32,52 @@
         </div>
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li><a href="index.html">主页</a></li>
+            <li class="active"><a href="index.html">主页</a></li>
             <li><a href="sequence.html">时序图</a></li>
-            <li class="active"><a href="tool.html">在线工具</a></li>
+            <li><a href="tool.html">在线工具</a></li>
             <li><a target="_blank" href="https://github.com/junfengliang/nutuml">Github</a></li>
         </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
 <div id="app" class="container">
-    <h4>请输入</h4>
+<div class="row text-right">
+<button type="button" class="btn btn-link" onclick="location.href='../zh/'">中文</button>
+<button type="button" class="btn btn-link" onclick="location.href='../en/'">English</button>
+
+</div>
+    <div class="jumbotron">
+        <h2>NutUml：基于文本的UML建模工具</h2>
+        <p>
+            NutUml 是一个开源，免费的UML建模工具，基于Javascript，HTML5。你可以在浏览器界面里编辑UML描述文本，然后实时查看生成的UML图。
+        </p>
+    </div>
     <div class="row">
         <div class="col-md-6">
-            <textarea style="width:100%; height:360px;" placeholder="请输入内容" v-model="textarea"></textarea>
+            <h4>简单示例</h4>
+            <p>我们用->来表示参与者之间的消息传递， 不必显式地声明参与者。</p>
+            <p>也可以用-->来表示虚线。</p>
+            <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
+            <textarea style="width:100%; height:80px;" placeholder="请输入内容" v-model="textarea"></textarea>
+            <p>更多的语法说明及示例，请参考<a href="sequence.html">时序图</a></p>
         </div>
-        <div ref="canvas" class="col-md-6 text-center">
+        <div ref="canvas" class="col-md-6 text-center bottom-align-text">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Confluence插件</h4>
+            <p>Nutuml提供confluence 插件。<a href="../css/nutuml-1.0.1.jar">下载</a></p>
+            
         </div>
     </div>
     
     <footer>
+        <p></p>
         <p>&copy; 2020-2021 NutUml</p>
     </footer>
 </div>
 <script>
-    
 new Vue({
     data: {
         textarea: '客户端 -> 服务器 : 发起请求\n服务器 --> 客户端 : 响应'
@@ -69,6 +98,8 @@ new Vue({
     }
 }).$mount('#app')
 </script>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     var _hmt = _hmt || [];
     (function() {

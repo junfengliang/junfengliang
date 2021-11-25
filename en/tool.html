@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NutUml在线工具</title>
+    <title>NutUml online tool</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
@@ -25,19 +25,19 @@
         </div>
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li><a href="index.html">主页</a></li>
-            <li><a href="sequence.html">时序图</a></li>
-            <li class="active"><a href="tool.html">在线工具</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="sequence.html">Sequence</a></li>
+            <li class="active"><a href="tool.html">Online tool</a></li>
             <li><a target="_blank" href="https://github.com/junfengliang/nutuml">Github</a></li>
         </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
 <div id="app" class="container">
-    <h4>请输入</h4>
+    <h4>Please input</h4>
     <div class="row">
         <div class="col-md-6">
-            <textarea style="width:100%; height:360px;" placeholder="请输入内容" v-model="textarea"></textarea>
+            <textarea style="width:100%; height:360px;" placeholder="Please input content" v-model="textarea"></textarea>
         </div>
         <div ref="canvas" class="col-md-6 text-center">
         </div>
@@ -51,7 +51,7 @@
     
 new Vue({
     data: {
-        textarea: '客户端 -> 服务器 : 发起请求\n服务器 --> 客户端 : 响应'
+        textarea: 'Client -> Server : Request\nServer --> Client : Response'
     },
     watch: {
         textarea: function(){
