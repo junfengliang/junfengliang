@@ -1778,6 +1778,11 @@ var NutUml;
                     break;
                 }
                 var opItem = tokens[cur++];
+                if(opItem.type != TYPE_OPERATOR){
+                   // syntax error 
+                   obj.error = item;
+                   return obj;
+                } 
                 if(cur>=len){
                     break;
                 }
@@ -1924,8 +1929,12 @@ var NutUml;
         var canvas = document.createElement("canvas");
         this.context = canvas.getContext("2d");
         var img = document.createElement("img");
+        var message = document.createElement("div");
+        message.style = "background-color: #fcf8e3;";
+        el.appendChild(message);
         el.appendChild(img);
         this.img = img;
+        this.message = message;
         this.canvas = canvas;
         this.tokens = [];
         this.debug = false;
@@ -1945,6 +1954,16 @@ var NutUml;
         if(this.debug){
             console.log(secObj)
         }
+        if(secObj.error !==undefined){
+            console.log("error" + JSON.stringify(secObj.error))
+            this.message.innerText = "Syntax error near \"" + secObj.error.value + "\" at line " + secObj.error.line
+            this.message.style = "background-color: #fcf8e3; padding:15px; font-family: \"Helvetica Neue\",Helvetica,Arial,sans-serif; font-size: 14px; line-height: 1.42857143; color: #333;";
+            return ""; 
+        }else{
+            this.message.innerText = "";
+            this.message.style = "";
+        }
+
         var ctx= this.context;
         ctx.lineWidth=1;
         
@@ -1993,6 +2012,7 @@ var NutUml;
         let tokens = [];
         var multiLineFlag = false;
         var multiLine = false;
+        var curLine =1;
         while(cur < str.length) {
             if(newLines.includes(str[cur]) && multiLineFlag ==true){
                 multiLine = true
@@ -2018,10 +2038,12 @@ var NutUml;
                                 tokens.push({
                                     type: TYPE_MESSAGE,
                                     value: message.trimEnd(),
+                            line: curLine
                                 });
                                 tokens.push({
                                     type: TYPE_RESERVED,
                                     value: word,
+                            line: curLine
                                 });
                                 break;
                             }else{
@@ -2041,6 +2063,9 @@ var NutUml;
                 multiLine =  false
             }
             if(/\s/.test(str[cur])) { // 跳过空格
+                if(str[cur]=='\n'){
+                   curLine++;
+                }
                 cur++;
             } else if(isWordChar(str[cur])) { // 读单词
                 
@@ -2055,6 +2080,7 @@ var NutUml;
                     tokens.push({
                         type: TYPE_RESERVED,
                         value: word,
+                        line: curLine
                     }); // 存储保留字(关键字)
                     if(multiLineWords.includes(word)){
                         if(tokens[tokens.length-2].value!="end"){
@@ -2073,12 +2099,14 @@ var NutUml;
                         tokens.push({
                             type: TYPE_MESSAGE,
                             value: tempWord,
+                            line: curLine
                         })
                     }
                 } else {
                     tokens.push({
                         type: TYPE_WORD,
                         value: word,
+                        line: curLine
                     }); // 存储普通单词                            
                 }
             } else if(separators.includes(str[cur])) {
@@ -2086,6 +2114,7 @@ var NutUml;
                 tokens.push({
                     type: TYPE_SEPARATORS,
                     value: str[cur++],
+                    line: curLine
                 }); // 存储分隔符并将cur向右移动
                 
                 let word = "";
@@ -2102,11 +2131,13 @@ var NutUml;
                 tokens.push({
                     type: TYPE_MESSAGE,
                     value: word,
+                            line: curLine
                 }); 
             } else if(','==str[cur]) {
                 tokens.push({
                     type: TYPE_COMMA,
                     value: str[cur++],
+                            line: curLine
                 }); // 存储分隔符并将cur向右移动
             } else if('.'==str[cur]) {
                 var message = "";
@@ -2128,6 +2159,7 @@ var NutUml;
                 tokens.push({
                     type: TYPE_DELAY,
                     value: message,
+                            line: curLine
                 }); // 存储分隔符并将cur向右移动
             }else if('|'==str[cur]) {
                 var message = "";
@@ -2152,6 +2184,7 @@ var NutUml;
                 tokens.push({
                     type: TYPE_SPACE,
                     value: message,
+                    line: curLine
                 }); // 存储分隔符并将cur向右移动
             } else if(operators.includes(str[cur])) {
                 let operator = "" + str[cur++];
@@ -2161,6 +2194,7 @@ var NutUml;
                 tokens.push({
                     type: TYPE_OPERATOR,
                     value: operator,
+                    line: curLine
                 }); // 存储运算符                        
             } else if('"'==str[cur]){
                 let operator = "";
@@ -2174,6 +2208,7 @@ var NutUml;
                 tokens.push({
                     type: TYPE_STRING,
                     value: operator,
+                    line: curLine
                 });
             } else if('='==str[cur]){
                 cur++;
@@ -2191,6 +2226,7 @@ var NutUml;
                     tokens.push({
                         type: TYPE_SEPARATE_LINE,
                         value: message,
+                        line: curLine
                     });
                 }else{
                     return "syntax error"

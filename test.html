@@ -71,9 +71,11 @@ new Vue({
     },
     methods: {
         draw: function(canvas,text){
-            var nutuml = new NutUml(canvas);
-            nutuml.debug =true;
-            nutuml.drawUml(text);
+            if(this.nutuml==undefined){
+               this.nutuml = new NutUml(canvas);
+               this.nutuml.debug = true; 
+            }
+            this.nutuml.drawUml(text);
         }
     }
 }).$mount('#app')
