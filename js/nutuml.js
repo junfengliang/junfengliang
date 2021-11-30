@@ -2016,6 +2016,7 @@ var NutUml;
         while(cur < str.length) {
             if(newLines.includes(str[cur]) && multiLineFlag ==true){
                 multiLine = true
+                curLine++
                 multiLineFlag = false
                 cur++
             }
@@ -2023,6 +2024,7 @@ var NutUml;
                 // handle multiline message until of 'end' at begin of line
                 var message = "";
                 var lineStart = true;
+                var multiStart = curLine;
                 while(cur < str.length){
                     if(lineStart){
                         if(isWordChar(str[cur])) { // 读单词
@@ -2038,12 +2040,12 @@ var NutUml;
                                 tokens.push({
                                     type: TYPE_MESSAGE,
                                     value: message.trimEnd(),
-                            line: curLine
+                                    line: multiStart 
                                 });
                                 tokens.push({
                                     type: TYPE_RESERVED,
                                     value: word,
-                            line: curLine
+                                    line: curLine
                                 });
                                 break;
                             }else{
@@ -2056,6 +2058,7 @@ var NutUml;
                     }else{
                         if(newLines.includes(str[cur])){
                             lineStart = true;
+                            curLine++
                         }
                         message += str[cur++]
                     }
@@ -2083,7 +2086,7 @@ var NutUml;
                         line: curLine
                     }); // 存储保留字(关键字)
                     if(multiLineWords.includes(word)){
-                        if(tokens[tokens.length-2].value!="end"){
+                        if(tokens.length<2 || tokens[tokens.length-2].value!="end"){
                             multiLineFlag = true;
                         }
                     }
