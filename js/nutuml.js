@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * NutUml version 0.5.0
+ * NutUml version 0.6.0
  */
 
 var NutUml;
@@ -15,6 +15,7 @@ var NutUml;
     var pagePadding = 10;
     var lineHeight = fontSize + linePadding;
     var shadowColor = "#9A6A7A";
+    var boxColor = "#EEEEEE";
     var fillStyle = "#FEFECE";
     var fillStyleWhite = "#ffffff";
     var textFillStyle = "#333";
@@ -90,7 +91,7 @@ var NutUml;
     const reservedWords = ['hide','autonumber','as', 'participant', 'actor', 'boundary', 
         'control', 'entity', 'database', 'collections','title','header','footer',
         'alt','else','opt','loop','par','break','critical','group','end','note',
-        'left','right','of','over','ref','activate','deactivate','destroy'];
+        'left','right','of','over','ref','activate','deactivate','destroy','box'];
     const participantWords = ['participant', 'actor', 'boundary', 'control', 'entity', 'database', 'collections'];
     const oneLineWords = ['title','header','footer','alt','else','opt','loop','par','break','critical','group'];
     const multiLineWords = ['title','note','ref'];
@@ -375,6 +376,16 @@ var NutUml;
             var fObj = _measureText(ctx,obj.footer);
             obj.footerHeight = fObj.height;
         }
+        if(obj.box.length>0){
+            for(var i=0;i<obj.box.length;i++){
+               var boxItem = obj.box[i];
+               if(boxItem.title !=null && boxItem.title.length>0){ 
+                   var tObj = _measureText(ctx,boxItem.title);
+                   obj.boxHeight = Math.max(obj.boxHeight, tObj.height);
+               }
+            }
+
+        }
     }
     function _calcParticipantSize(ctx,participant){
         ctx.font = font;
@@ -474,7 +485,7 @@ var NutUml;
         for(var i=0;i<len;i++){
             obj.maxParticipantHeight = Math.max(obj.participant[i].height,obj.maxParticipantHeight);
         }
-        var picPadding = pagePadding + obj.titleHeight + obj.headerHeight;
+        var picPadding = pagePadding + obj.titleHeight + obj.headerHeight + obj.boxHeight;
         for(var i=0;i<len;i++){
             var item = obj.participant[i];
             if(i==0){
@@ -502,7 +513,7 @@ var NutUml;
             item.lineX = item.x + item.width/2;
             item.lineY = item.y + item.height;
         }
-        obj.height = Math.ceil(obj.titleHeight + obj.footerHeight + obj.headerHeight 
+        obj.height = Math.ceil(obj.titleHeight + obj.footerHeight + obj.headerHeight + obj.boxHeight 
             + lineHeight + obj.innerHeight + obj.maxParticipantHeight*2 + pagePadding*2);
         var lastWidth = obj.participant[len-1].width;
         var lastLineWidth = arr[obj.participant[len-1].name + "_" + obj.participant[len-1].name];
@@ -513,7 +524,7 @@ var NutUml;
     }
     function _calcLinesXY(obj){
         var hisArr = [];
-        var curY = pagePadding + obj.headerHeight + obj.titleHeight + obj.maxParticipantHeight;
+        var curY = pagePadding + obj.headerHeight + obj.boxHeight + obj.titleHeight + obj.maxParticipantHeight;
         var curGroupItem, lastGroupItem;
         var minX = 0;
         var maxX = 0;
@@ -726,6 +737,27 @@ var NutUml;
             _rectangle(ctx,item);
         }
     }
+
+    function _drawOneBox(ctx,item){
+        
+        ctx.save()
+        ctx.beginPath()
+
+        ctx.shadowOffsetX=0;
+        ctx.shadowOffsetY=0;
+        ctx.shadowBlur=1;
+        ctx.fillStyle= boxColor;
+        if(item.color !=null){
+           ctx.fillStyle = item.color
+        }
+        ctx.fillRect(item.x, item.y, item.width, item.height);
+
+        ctx.strokeStyle= strokeStyle;
+        ctx.strokeRect(item.x, item.y, item.width, item.height);
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+    }
     function _drawObj(ctx,obj){
         if(obj.titleHeight>0){
             ctx.font = TITLE_FONT;
@@ -745,6 +777,11 @@ var NutUml;
             var fObj = _measureText(ctx,obj.footer);
             var footerX = obj.width - pagePadding - fObj.width;
             _drawText(ctx,footerX, obj.height-obj.footerHeight,obj.footer,false);
+        }
+        if(obj.box.length>0){
+           for(var i=0;i<obj.box.length;i++){
+               _drawOneBox(ctx,obj.box[i])
+           }
         }
     }
     function _drawParticipant(ctx,obj){
@@ -1422,6 +1459,7 @@ var NutUml;
     function _getObj(tokens){
         var obj = {
             participant : [],
+            box : [],
             lines : [],
             activeLines : [],
             innerHeight:0,
@@ -1431,6 +1469,7 @@ var NutUml;
             header: '',
             footer: '',
             headerHeight: 0,
+            boxHeight: 0,
             titleHeight: 0,
             footerHeight: 0,
             autonumber:false,
@@ -1440,11 +1479,34 @@ var NutUml;
         var cur =0;
         var participantArr = [];
         var number = 1;
+        var inBox = false;
         while(cur<len){
             var item = tokens[cur++];
             if(item.type==TYPE_RESERVED){
                 if("ref"==item.value){
                     cur = _parseRef(tokens,obj,cur)
+                    continue;
+                }
+                if("box"==item.value){
+                    //  case
+                    // box "Internal Service" #LightBlue
+                    if(cur+1<len){
+                       var nextItem = tokens[cur];
+                       var next2 = tokens[cur+1];
+                       if(next2.type == TYPE_WORD && item.line==nextItem.line && item.line==next2.line){
+                           obj.box.push({title:nextItem.value,color:next2.value,start:null,end:null}) 
+                           cur +=2
+                           inBox =true
+                           continue
+                       }else if(item.line==nextItem.line){
+                           obj.box.push({title:nextItem.value,color:null,start:null,end:null}) 
+                           cur +=1
+                           inBox =true
+                           continue
+                       } 
+                    } 
+                    obj.box.push({title:'',color:null,start:null,end:null}) 
+                    inBox=true
                     continue;
                 }
                 if("note"==item.value){
@@ -1690,6 +1752,13 @@ var NutUml;
                     continue
                 }
                 if("end"==item.value){
+                    // handle end box
+                    var nextItem = tokens[cur]
+                    if(nextItem.value=='box'){
+                        inBox=false
+                        cur++
+                        continue
+                    }
                     obj.lines.push(_getLineItem(LINE_END,"",item.value));
                     continue
                 }
@@ -1720,6 +1789,7 @@ var NutUml;
                                 type:item.value 
                             });
                             participantArr.push(opItem.value);
+                            setBox(obj,inBox,opItem.value)
                             cur +=2
                             continue
                         }else if(opItem.type == TYPE_STRING && asItem.value=="as" && valItem.type == TYPE_WORD){
@@ -1731,6 +1801,7 @@ var NutUml;
                                 type:item.value 
                             });
                             participantArr.push(valItem.value);
+                            setBox(obj,inBox,valItem.value)
                             cur +=2
                             continue
                         }
@@ -1745,6 +1816,7 @@ var NutUml;
                             type:item.value 
                         });
                         participantArr.push(opItem.value);
+                        setBox(obj,inBox,opItem.value)
                         continue
                     }
                 }
@@ -1833,6 +1905,15 @@ var NutUml;
             }
         }
         return obj;
+    }
+    function setBox(obj,inBox,val){
+       if(inBox){
+          var box = obj.box[obj.box.length-1];
+          if( box.start==null){
+              box.start = val 
+           }
+         box.end=val
+       }
     }
     function _getParByName(obj,name){
         for(var i=0;i<obj.participant.length;i++){
@@ -1923,6 +2004,18 @@ var NutUml;
         obj.activeLines.reverse();
     }
     
+    function _calcBoxXY(secObj){
+       if(secObj.box.length==0)
+          return
+
+       for(var i=0;i<secObj.box.length;i++){
+           var item = secObj.box[i];
+           item.x=0;
+           item.y=0;
+           item.width=100;
+           item.height=100; 
+       } 
+    }
     NutUml = function (el) {
         this.el = el;
         el.innerHTML="";
@@ -1974,6 +2067,7 @@ var NutUml;
         _calcParticipantXY(secObj);
         _calcLinesXY(secObj);
         _calcActiveLines(secObj);
+        _calcBoxXY(secObj);
 
         this.canvas.width = secObj.width;
         this.canvas.height = secObj.height;
