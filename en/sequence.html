@@ -296,7 +296,7 @@ right: 0;
     
     <div class="row">
         <div class="col-md-6">
-            <h4>Package participants (under development...)</h4>
+            <h4>Package participants </h4>
              <p>You can use box and end box to draw a box to wrap the participants. <br>
                  You can also add a title or background color after the box keyword.</p>
             <textarea v-model="textarea22" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
@@ -554,12 +554,15 @@ new Vue({
         },
         textarea18: function(){
             this.draw(this.$refs.canvas16,this.textarea18);
+        },
+        textarea22: function(){
+            this.draw(this.$refs.canvas22,this.textarea22);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=18;i++){
-            if(i==12 || i==15){ // 跳过暂未实现的项
+        for(var i=1;i<=22;i++){
+            if(i==12 || i==15|| i==19|| i==20|| i==21){ // 跳过暂未实现的项
                 continue;
             }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);

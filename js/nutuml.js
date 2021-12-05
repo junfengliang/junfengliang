@@ -515,6 +515,9 @@ var NutUml;
         }
         obj.height = Math.ceil(obj.titleHeight + obj.footerHeight + obj.headerHeight + obj.boxHeight 
             + lineHeight + obj.innerHeight + obj.maxParticipantHeight*2 + pagePadding*2);
+        if(obj.box.length>0){
+            obj.height += pagePadding;
+        }
         var lastWidth = obj.participant[len-1].width;
         var lastLineWidth = arr[obj.participant[len-1].name + "_" + obj.participant[len-1].name];
         if(lastLineWidth && lastLineWidth>lastWidth/2){
@@ -757,6 +760,16 @@ var NutUml;
         ctx.stroke();
         ctx.fill();
         ctx.restore();
+
+        ctx.save()
+        ctx.font= font;
+        ctx.fillStyle = textFillStyle;
+        
+        var mObj = _measureText(ctx,item.title);
+        var drawX = item.x + (item.width - mObj.width)/2
+        _onlyDrawText(ctx, drawX, item.y,item.title, fontSize,true);
+        ctx.fill()
+        ctx.restore()
     }
     function _drawObj(ctx,obj){
         if(obj.titleHeight>0){
@@ -1753,6 +1766,9 @@ var NutUml;
                 }
                 if("end"==item.value){
                     // handle end box
+                    if(cur>=len){
+                        continue
+                    }
                     var nextItem = tokens[cur]
                     if(nextItem.value=='box'){
                         inBox=false
@@ -2011,9 +2027,25 @@ var NutUml;
        for(var i=0;i<secObj.box.length;i++){
            var item = secObj.box[i];
            item.x=0;
-           item.y=0;
-           item.width=100;
-           item.height=100; 
+           for(var j=0;j<secObj.participant.length;j++){
+               var p = secObj.participant[j];
+               if(p.name==item.start){
+                    item.x = p.x - pagePadding
+                    break;
+               }
+           }
+           var w = 0;
+           for(var j=0;j<secObj.participant.length;j++){
+                var p = secObj.participant[j];
+                if(p.name==item.end){
+                    w = p.x - item.x + p.width + pagePadding
+                    break;
+                }
+            }
+           
+           item.y=secObj.titleHeight + secObj.headerHeight;
+           item.width=w;
+           item.height=secObj.height-secObj.titleHeight-secObj.headerHeight-secObj.footerHeight-pagePadding; 
        } 
     }
     NutUml = function (el) {

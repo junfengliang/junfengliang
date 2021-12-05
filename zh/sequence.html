@@ -303,7 +303,7 @@
     
     <div class="row">
         <div class="col-md-6">
-            <h4>包裹参与者(开发中...)</h4>
+            <h4>包裹参与者</h4>
             <p>可以使用box和end box画一个盒子将参与者包裹起来。<br>
                 还可以在box关键字之后添加标题或者背景颜色。
             </p>
@@ -498,7 +498,7 @@ new Vue({
 
                 +'Bob <-]\n'
                 +'Bob x<-]',
-        textarea22: 'box "Internal Service" #LightBlue\n'
+        textarea22: 'box "Internal Service" LightBlue\n'
                 +'participant Bob\n'
                 +'participant Alice\n'
                 +'end box\n'
@@ -562,12 +562,15 @@ new Vue({
         },
         textarea18: function(){
             this.draw(this.$refs.canvas16,this.textarea18);
+        },
+        textarea22: function(){
+            this.draw(this.$refs.canvas22,this.textarea22);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=18;i++){
-            if(i==12 || i==15){ // 跳过暂未实现的项
+        for(var i=1;i<=22;i++){
+            if(i==12 || i==15|| i==19|| i==20|| i==21){ // 跳过暂未实现的项
                 continue;
             }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);

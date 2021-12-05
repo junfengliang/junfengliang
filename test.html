@@ -47,18 +47,16 @@
     
 new Vue({
     data: {
-        textarea: 'participant User\n'
-                +'User -> A: DoWork\n\n'
-                +'activate A #FFBBBB\n'
-                +'A -> A: Internal call\n\n'
-                +'activate A #DarkSalmon\n'
-                +'A -> B: << createRequest >>\n\n'
-                +'activate B\n'
-                +'B --> A: RequestCreated\n'
-                +'deactivate B\n'
-                +'deactivate A\n'
-                +'A -> User: Done\n'
-                +'deactivate A',
+        textarea: `
+        title Title
+        header a header
+        box "Internal Service" #LightBlue
+        participant Bob
+        participant Alice
+        end box
+        participant Other
+        Bob -> Alice : hello
+        Alice -> Other : hello`,
     },
     watch: {
         textarea: function(){
