@@ -199,16 +199,6 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>改变备注框的形状(开发中...)</h4>
-            <p>我们可以使用 hnote 和 rnote 这两个关键字来修改备注框的形状。
-            </p>
-            <textarea v-model="textarea12" style="width:100%; height:200px;" placeholder="请输入内容"></textarea>
-        </div>
-        <div ref="canvas12" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
             <h4>引用</h4>
             <p>我们可以在图中通过使用ref over关键词来实现引用。
             </p>
@@ -272,17 +262,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>创建参与者(开发中...)</h4>
-            <p>你可以把关键字create放在第一次接收到消息之前，以强调本次消息实际上是在创建新的对象。
-            </p>
-            <textarea v-model="textarea19" style="width:100%; height:200px;" placeholder="请输入内容"></textarea>
-        </div>
-        <div ref="canvas19" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h4>进入和发出消息(开发中...)</h4>
+            <h4>进入和发出消息</h4>
             <p>如果只想关注部分图示，你可以使用进入和发出箭头。<br>
                 使用方括号[和]表示图示的左、右两侧。
             </p>
@@ -291,16 +271,6 @@
         <div ref="canvas20" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <p>还可以使用下面的语法
-            </p>
-            <textarea v-model="textarea21" style="width:100%; height:300px;" placeholder="请输入内容"></textarea>
-        </div>
-        <div ref="canvas21" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    
     <div class="row">
         <div class="col-md-6">
             <h4>包裹参与者</h4>
@@ -563,6 +533,9 @@ new Vue({
         textarea18: function(){
             this.draw(this.$refs.canvas16,this.textarea18);
         },
+        textarea20: function(){
+            this.draw(this.$refs.canvas20,this.textarea20);
+        },
         textarea22: function(){
             this.draw(this.$refs.canvas22,this.textarea22);
         }
@@ -570,7 +543,7 @@ new Vue({
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
         for(var i=1;i<=22;i++){
-            if(i==12 || i==15|| i==19|| i==20|| i==21){ // 跳过暂未实现的项
+            if(i==12 || i==15|| i==19|| i==21){ // 跳过暂未实现的项
                 continue;
             }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
