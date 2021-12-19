@@ -803,6 +803,7 @@ var NutUml;
         
         for(var i=0;i<len;i++){
             var item = obj.participant[i];
+            if(item.name=="[" || item.name=="]")continue
             _drawOneParticipant(ctx,item);
             var bottom = _copyObj(item);
             bottom.y = item.y + obj.innerHeight + lineHeight + item.height;
@@ -1767,6 +1768,7 @@ var NutUml;
                 if("end"==item.value){
                     // handle end box
                     if(cur>=len){
+                        obj.lines.push(_getLineItem(LINE_END,"",item.value));
                         continue
                     }
                     var nextItem = tokens[cur]
@@ -1920,7 +1922,30 @@ var NutUml;
                 obj.lines.push(lineItem);
             }
         }
+        sortParticipant(obj);
         return obj;
+    }
+    function sortParticipant(obj){
+        var arr = [];
+        var head = null;
+        var tail = null;
+        for(var j=0;j<obj.participant.length;j++){
+           var item = obj.participant[j];
+           if(item.name=="["){
+               head = item;
+           }else if(item.name=="]"){
+               tail = item;
+           }else{
+               arr.push(item);
+	   }
+        }
+        if(tail!=null){
+           arr.push(tail)
+        }
+        if(head!=null){
+           arr.unshift(head)
+        }
+        obj.participant=arr;
     }
     function setBox(obj,inBox,val){
        if(inBox){
@@ -2121,7 +2146,7 @@ var NutUml;
         if(result){
             return result;
         }
-        if(c=='#'){
+        if(c=='#' || c=='[' || c==']'){
             return true;
         }
         return c.charCodeAt(0)>255;
