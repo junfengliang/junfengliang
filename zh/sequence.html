@@ -202,9 +202,9 @@
             <h4>引用</h4>
             <p>我们可以在图中通过使用ref over关键词来实现引用。
             </p>
-            <textarea v-model="textarea13" style="width:100%; height:230px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea12" style="width:100%; height:230px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas13" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas12" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -212,9 +212,9 @@
             <h4>延迟</h4>
             <p>我们可以使用...来表示延迟，并且还可以给延迟添加注释。                。
             </p>
-            <textarea v-model="textarea14" style="width:100%; height:150px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea13" style="width:100%; height:150px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas14" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas13" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -223,9 +223,9 @@
             <p>我们可以手动通过 \n 来换行。<br>
                 也可以使用 maxMessageSize。
             </p>
-            <textarea v-model="textarea15" style="width:100%; height:150px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea14" style="width:100%; height:150px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas15" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas14" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -233,9 +233,9 @@
             <h4>空间</h4>
             <p>我们可以通过 使用|||来增加空间。还可以使用数字指定增加的像素的数量。
             </p>
-            <textarea v-model="textarea16" style="width:100%; height:200px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea15" style="width:100%; height:280px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas16" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas15" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -246,18 +246,18 @@
                 activate和deactivate适用于以上情形。<br>
                 destroy表示一个参与者的生命线的终结。
             </p>
-            <textarea v-model="textarea17" style="width:100%; height:280px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea16" style="width:100%; height:280px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas17" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas16" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <p>还可以使用嵌套的生命线，并且运行给生命线添加颜色。
             </p>
-            <textarea v-model="textarea18" style="width:100%; height:300px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea17" style="width:100%; height:300px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas18" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas17" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -266,9 +266,9 @@
             <p>如果只想关注部分图示，你可以使用进入和发出箭头。<br>
                 使用方括号[和]表示图示的左、右两侧。
             </p>
-            <textarea v-model="textarea20" style="width:100%; height:300px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea18" style="width:100%; height:300px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas20" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas18" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -277,9 +277,9 @@
             <p>可以使用box和end box画一个盒子将参与者包裹起来。<br>
                 还可以在box关键字之后添加标题或者背景颜色。
             </p>
-            <textarea v-model="textarea22" style="width:100%; height:200px;" placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea19" style="width:100%; height:200px;" placeholder="请输入内容"></textarea>
         </div>
-        <div ref="canvas22" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas19" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <footer>
@@ -372,14 +372,7 @@ new Vue({
                 +'example of\n'
                 +'a long note.\n'
                 +'end note',
-        textarea12:'caller -> server : conReq\n'
-                +'hnote over caller : idle\n'
-                +'caller <- server : conConf\n'
-                +'rnote over server\n'
-                +'"r" as rectangle\n'
-                +'"h" as hexagon\n'
-                +'endrnote',
-        textarea13:'participant Alice\n'
+        textarea12:'participant Alice\n'
                 +'actor Bob\n\n'
 
                 +'ref over Alice, Bob : init\n\n'
@@ -390,17 +383,17 @@ new Vue({
                 +'  This can be on\n'
                 +'  several lines\n'
                 +'end ref',
-        textarea14:'Alice -> Bob: Authentication Request\n'
+        textarea13:'Alice -> Bob: Authentication Request\n'
                 +'...\n'
                 +'Bob --> Alice: Authentication Response\n'
                 +'...5 minutes latter...\n'
                 +'Bob --> Alice: Bye !',
-        textarea15:'skinparam maxMessageSize 50\n'
+        textarea14:'skinparam maxMessageSize 50\n'
                 +'participant a\n'
                 +'participant b\n'
                 +'a -> b :this\\nis\\nmanually\\ndone\n'
                 +'a -> b :this is a very long message on several words',
-        textarea16:'Alice -> Bob: message 1\n'
+        textarea15:'Alice -> Bob: message 1\n'
                 +'Bob --> Alice: ok\n'
                 +'|||\n'
                 +'Alice -> Bob: message 2\n'
@@ -408,7 +401,7 @@ new Vue({
                 +'||45||\n'
                 +'Alice -> Bob: message 3\n'
                 +'Bob --> Alice: ok',
-        textarea17: 'participant User\n'
+        textarea16: 'participant User\n'
                 +'User -> A: DoWork\n'
                 +'activate A\n'
 
@@ -425,7 +418,7 @@ new Vue({
 
                 +'A -> User: Done\n'
                 +'deactivate A',
-        textarea18: 'participant User\n'
+        textarea17: 'participant User\n'
                 +'User -> A: DoWork\n\n'
                 +'activate A #FFBBBB\n'
                 +'A -> A: Internal call\n\n'
@@ -437,14 +430,8 @@ new Vue({
                 +'deactivate A\n'
                 +'A -> User: Done\n'
                 +'deactivate A',
-        textarea19: 'Bob -> Alice : hello\n\n'
-                +'create Other\n'
-                +'Alice -> Other : new\n\n'
-                +'create control String\n'
-                +'Alice -> String\n'
-                +'note right : You can also put notes!\n\n'
-                +'Alice --> Bob : ok',
-        textarea20: '[-> A: DoWork\n\n'
+       
+        textarea18: '[-> A: DoWork\n\n'
                 +'activate A\n\n'
                 +'A -> A: Internal call\n'
                 +'activate A\n\n'
@@ -453,22 +440,7 @@ new Vue({
                 +'deactivate A\n'
                 +'[<- A: Done\n'
                 +'deactivate A',
-        textarea21: '[-> Bob\n'
-                +'[o-> Bob\n'
-                +'[o->o Bob\n'
-                +'[x-> Bob\n\n'
-
-                +'[<- Bob\n'
-                +'[x<- Bob\n\n'
-
-                +'Bob ->]\n'
-                +'Bob ->o]\n'
-                +'Bob o->o]\n'
-                +'Bob ->x]\n\n'
-
-                +'Bob <-]\n'
-                +'Bob x<-]',
-        textarea22: 'box "Internal Service" LightBlue\n'
+        textarea19: 'box "Internal Service" LightBlue\n'
                 +'participant Bob\n'
                 +'participant Alice\n'
                 +'end box\n'
@@ -518,11 +490,17 @@ new Vue({
         textarea11: function(){
             this.draw(this.$refs.canvas11,this.textarea11);
         },
+        textarea12: function(){
+            this.draw(this.$refs.canvas12,this.textarea12);
+        },
         textarea13: function(){
             this.draw(this.$refs.canvas13,this.textarea13);
         },
         textarea14: function(){
             this.draw(this.$refs.canvas14,this.textarea14);
+        },
+        textarea15: function(){
+            this.draw(this.$refs.canvas15,this.textarea15);
         },
         textarea16: function(){
             this.draw(this.$refs.canvas16,this.textarea16);
@@ -533,17 +511,14 @@ new Vue({
         textarea18: function(){
             this.draw(this.$refs.canvas16,this.textarea18);
         },
-        textarea20: function(){
-            this.draw(this.$refs.canvas20,this.textarea20);
-        },
-        textarea22: function(){
-            this.draw(this.$refs.canvas22,this.textarea22);
+        textarea19: function(){
+            this.draw(this.$refs.canvas19,this.textarea19);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=22;i++){
-            if(i==12 || i==15|| i==19|| i==21){ // 跳过暂未实现的项
+        for(var i=1;i<=19;i++){
+            if(i==14){ // 跳过暂未实现的项
                 continue;
             }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);

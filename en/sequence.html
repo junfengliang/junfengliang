@@ -200,18 +200,18 @@ right: 0;
         <div class="col-md-6">
             <h4>Reference</h4>
              <p>We can use the <b>ref over</b> keyword in the figure to achieve reference.</p>
-            <textarea v-model="textarea13" style="width:100%; height:300px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea12" style="width:100%; height:300px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas13" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas12" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <h4>Delay</h4>
              <p>We can use <b>...</b> to indicate the delay, and we can also add a comment to the delay.</p>
-            <textarea v-model="textarea14" style="width:100%; height:150px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea13" style="width:100%; height:150px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas14" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas13" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -220,18 +220,18 @@ right: 0;
             <p>We can manually pass \n to wrap the line. <br>
                 You can also use <b>maxMessageSize</b>.
             </p>
-            <textarea v-model="textarea15" style="width:100%; height:150px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea14" style="width:100%; height:150px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas15" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas14" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <h4>Space</h4>
              <p>We can increase the space by using |||. You can also use numbers to specify the number of pixels added.</p>
-            <textarea v-model="textarea16" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea15" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas16" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas15" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
@@ -241,15 +241,25 @@ right: 0;
                  Once the participant is activated, its lifeline will be displayed. <br>
                  Activate and deactivate apply to the above situations. <br>
                  Destroy represents the end of a participant's lifeline.</p>
-            <textarea v-model="textarea17" style="width:100%; height:280px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea16" style="width:100%; height:280px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas17" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas16" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <p>You can also use nested lifelines, and run to add colors to the lifelines.
             </p>
+            <textarea v-model="textarea17" style="width:100%; height:300px;" placeholder="Please input content"></textarea>
+        </div>
+        <div ref="canvas17" class="col-md-6 text-center bottom-align-text">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Enter and send out messages</h4>
+             <p>If you only want to follow some of the icons, you can use the enter and send arrows. <br>
+                 Use square brackets [and] to indicate the left and right sides of the diagram.</p>
             <textarea v-model="textarea18" style="width:100%; height:300px;" placeholder="Please input content"></textarea>
         </div>
         <div ref="canvas18" class="col-md-6 text-center bottom-align-text">
@@ -257,22 +267,12 @@ right: 0;
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>Enter and send out messages (under development...)</h4>
-             <p>If you only want to follow some of the icons, you can use the enter and send arrows. <br>
-                 Use square brackets [and] to indicate the left and right sides of the diagram.</p>
-            <textarea v-model="textarea20" style="width:100%; height:300px;" placeholder="Please input content"></textarea>
-        </div>
-        <div ref="canvas20" class="col-md-6 text-center bottom-align-text">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
             <h4>Package participants </h4>
              <p>You can use box and end box to draw a box to wrap the participants. <br>
                  You can also add a title or background color after the box keyword.</p>
-            <textarea v-model="textarea22" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea19" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
         </div>
-        <div ref="canvas22" class="col-md-6 text-center bottom-align-text">
+        <div ref="canvas19" class="col-md-6 text-center bottom-align-text">
         </div>
     </div>
     <footer>
@@ -365,14 +365,7 @@ new Vue({
                 +'example of\n'
                 +'a long note.\n'
                 +'end note',
-        textarea12:'caller -> server : conReq\n'
-                +'hnote over caller : idle\n'
-                +'caller <- server : conConf\n'
-                +'rnote over server\n'
-                +'"r" as rectangle\n'
-                +'"h" as hexagon\n'
-                +'endrnote',
-        textarea13:'participant Alice\n'
+        textarea12:'participant Alice\n'
                 +'actor Bob\n\n'
 
                 +'ref over Alice, Bob : init\n\n'
@@ -383,17 +376,17 @@ new Vue({
                 +'  This can be on\n'
                 +'  several lines\n'
                 +'end ref',
-        textarea14:'Alice -> Bob: Authentication Request\n'
+        textarea13:'Alice -> Bob: Authentication Request\n'
                 +'...\n'
                 +'Bob --> Alice: Authentication Response\n'
                 +'...5 minutes latter...\n'
                 +'Bob --> Alice: Bye !',
-        textarea15:'skinparam maxMessageSize 50\n'
+        textarea14:'skinparam maxMessageSize 50\n'
                 +'participant a\n'
                 +'participant b\n'
                 +'a -> b :this\\nis\\nmanually\\ndone\n'
                 +'a -> b :this is a very long message on several words',
-        textarea16:'Alice -> Bob: message 1\n'
+        textarea15:'Alice -> Bob: message 1\n'
                 +'Bob --> Alice: ok\n'
                 +'|||\n'
                 +'Alice -> Bob: message 2\n'
@@ -401,7 +394,7 @@ new Vue({
                 +'||45||\n'
                 +'Alice -> Bob: message 3\n'
                 +'Bob --> Alice: ok',
-        textarea17: 'participant User\n'
+        textarea16: 'participant User\n'
                 +'User -> A: DoWork\n'
                 +'activate A\n'
 
@@ -418,7 +411,7 @@ new Vue({
 
                 +'A -> User: Done\n'
                 +'deactivate A',
-        textarea18: 'participant User\n'
+        textarea17: 'participant User\n'
                 +'User -> A: DoWork\n\n'
                 +'activate A #FFBBBB\n'
                 +'A -> A: Internal call\n\n'
@@ -430,14 +423,8 @@ new Vue({
                 +'deactivate A\n'
                 +'A -> User: Done\n'
                 +'deactivate A',
-        textarea19: 'Bob -> Alice : hello\n\n'
-                +'create Other\n'
-                +'Alice -> Other : new\n\n'
-                +'create control String\n'
-                +'Alice -> String\n'
-                +'note right : You can also put notes!\n\n'
-                +'Alice --> Bob : ok',
-        textarea20: '[-> A: DoWork\n\n'
+       
+        textarea18: '[-> A: DoWork\n\n'
                 +'activate A\n\n'
                 +'A -> A: Internal call\n'
                 +'activate A\n\n'
@@ -446,22 +433,7 @@ new Vue({
                 +'deactivate A\n'
                 +'[<- A: Done\n'
                 +'deactivate A',
-        textarea21: '[-> Bob\n'
-                +'[o-> Bob\n'
-                +'[o->o Bob\n'
-                +'[x-> Bob\n\n'
-
-                +'[<- Bob\n'
-                +'[x<- Bob\n\n'
-
-                +'Bob ->]\n'
-                +'Bob ->o]\n'
-                +'Bob o->o]\n'
-                +'Bob ->x]\n\n'
-
-                +'Bob <-]\n'
-                +'Bob x<-]',
-        textarea22: 'box "Internal Service" #LightBlue\n'
+        textarea19: 'box "Internal Service" LightBlue\n'
                 +'participant Bob\n'
                 +'participant Alice\n'
                 +'end box\n'
@@ -511,11 +483,17 @@ new Vue({
         textarea11: function(){
             this.draw(this.$refs.canvas11,this.textarea11);
         },
+        textarea12: function(){
+            this.draw(this.$refs.canvas12,this.textarea12);
+        },
         textarea13: function(){
             this.draw(this.$refs.canvas13,this.textarea13);
         },
         textarea14: function(){
             this.draw(this.$refs.canvas14,this.textarea14);
+        },
+        textarea15: function(){
+            this.draw(this.$refs.canvas15,this.textarea15);
         },
         textarea16: function(){
             this.draw(this.$refs.canvas16,this.textarea16);
@@ -526,14 +504,14 @@ new Vue({
         textarea18: function(){
             this.draw(this.$refs.canvas16,this.textarea18);
         },
-        textarea22: function(){
-            this.draw(this.$refs.canvas22,this.textarea22);
+        textarea19: function(){
+            this.draw(this.$refs.canvas19,this.textarea19);
         }
     },
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
-        for(var i=1;i<=22;i++){
-            if(i==12 || i==15|| i==19|| i==20|| i==21){ // 跳过暂未实现的项
+        for(var i=1;i<=19;i++){
+            if(i==14){ // 跳过暂未实现的项
                 continue;
             }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
