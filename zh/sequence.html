@@ -219,7 +219,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>文本换行(开发中...)</h4>
+            <h4>文本换行</h4>
             <p>我们可以手动通过 \n 来换行。<br>
                 也可以使用 maxMessageSize。
             </p>
@@ -388,7 +388,7 @@ new Vue({
                 +'Bob --> Alice: Authentication Response\n'
                 +'...5 minutes latter...\n'
                 +'Bob --> Alice: Bye !',
-        textarea14:'skinparam maxMessageSize 50\n'
+        textarea14:'skinparam maxMessageSize 150\n'
                 +'participant a\n'
                 +'participant b\n'
                 +'a -> b :this\\nis\\nmanually\\ndone\n'
@@ -518,9 +518,6 @@ new Vue({
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
         for(var i=1;i<=19;i++){
-            if(i==14){ // 跳过暂未实现的项
-                continue;
-            }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
         }
     },

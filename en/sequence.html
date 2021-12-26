@@ -216,7 +216,7 @@ right: 0;
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>Text wrap (under development...)</h4>
+            <h4>Text wrap </h4>
             <p>We can manually pass \n to wrap the line. <br>
                 You can also use <b>maxMessageSize</b>.
             </p>
@@ -229,7 +229,7 @@ right: 0;
         <div class="col-md-6">
             <h4>Space</h4>
              <p>We can increase the space by using |||. You can also use numbers to specify the number of pixels added.</p>
-            <textarea v-model="textarea15" style="width:100%; height:200px;" placeholder="Please input content"></textarea>
+            <textarea v-model="textarea15" style="width:100%; height:250px;" placeholder="Please input content"></textarea>
         </div>
         <div ref="canvas15" class="col-md-6 text-center bottom-align-text">
         </div>
@@ -381,7 +381,7 @@ new Vue({
                 +'Bob --> Alice: Authentication Response\n'
                 +'...5 minutes latter...\n'
                 +'Bob --> Alice: Bye !',
-        textarea14:'skinparam maxMessageSize 50\n'
+        textarea14:'skinparam maxMessageSize 150\n'
                 +'participant a\n'
                 +'participant b\n'
                 +'a -> b :this\\nis\\nmanually\\ndone\n'
@@ -511,9 +511,6 @@ new Vue({
     mounted: function() {
         this.draw(this.$refs.canvas,this.textarea);
         for(var i=1;i<=19;i++){
-            if(i==14){ // 跳过暂未实现的项
-                continue;
-            }
             this.draw(this.$refs["canvas"+i],this["textarea" + i]);
         }
     },
