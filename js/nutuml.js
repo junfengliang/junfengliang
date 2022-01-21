@@ -1,10 +1,11 @@
 'use strict'
 
 /**
- * NutUml version 0.6.0
+ * NutUml version 0.7.0
  */
 
 var NutUml;
+var nutuml;
 
 (function(){
     var fontSize = 14;
@@ -2235,6 +2236,10 @@ var NutUml;
         this.img.src=this.canvas.toDataURL();
         return "";
     };
+    NutUml.prototype.render = function(text){
+        this.drawUml(text);
+        return "<img src='" + this.canvas.toDataURL() + "' />";
+    };
     function isWordChar(c){
         var result = /[a-z0-9]/i.test(c);
         if(result){
@@ -2487,6 +2492,7 @@ var NutUml;
         this.tokens = tokens;
         return tokens;
     };
+    nutuml = new NutUml(document.createElement("div"));
 
 })()
 if (typeof module !== 'undefined' && typeof exports === 'object') {
