@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NutUml时序图</title>
+    <link href="//unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+
+<script src="../js/nutuml.js"></script>
+<style>
+@media (min-width: 768px ) {
+  .row {
+      position: relative;
+  }
+}
+</style>
+
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">NutUml</a>
+        </div>
+        <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="index.html">主页</a></li>
+            <li><a href="sequence.html">时序图</a></li>
+            <li><a href="tool.html">在线工具</a></li>
+            <li><a target="_blank" href="https://github.com/junfengliang/nutuml">Github</a></li>
+            <li><a href="my-diagram.html">我的图表</a></li>
+            <li><a href="login.html">登录</a></li>
+            <li><a href="reg.html">注册</a></li>
+        </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<div id="app" class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">标题</span>
+                <input type="text" class="form-control" placeholder="请输入标题" aria-describedby="basic-addon1">
+            </div>
+              
+              
+            <textarea style="margin-top:10px; width:100%; height:400px;" placeholder="请输入内容" v-model="textarea"></textarea>
+            <button style="width: 40%" class="w-100 btn btn-lg btn-primary" type="submit">保存</button>
+        </div>
+        <div ref="canvas" class="col-md-6 text-center bottom-align-text">
+        </div>
+    </div>
+    
+</div>
+<script>
+new Vue({
+    data: {
+        textarea: '客户端 -> 服务器 : 发起请求\n服务器 --> 客户端 : 响应'
+    },
+    watch: {
+        textarea: function(){
+            this.draw(this.$refs.canvas,this.textarea);
+        }
+    },
+    mounted: function() {
+        this.draw(this.$refs.canvas,this.textarea);
+    },
+    methods: {
+        draw: function(canvas,text){
+            var nutuml = new NutUml(canvas);
+            nutuml.drawUml(text);
+        }
+    }
+}).$mount('#app')
+</script>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?381aeaab62c7738765d54c516d97ef83";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</body>
+</html>
+
