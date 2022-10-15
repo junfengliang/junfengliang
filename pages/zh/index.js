@@ -1,5 +1,5 @@
-import Head from 'next/head'
 import NutHead from '../../component/NutHead'
+import NutFoot from '../../component/NutFoot'
 import Script from 'next/script'
 import Link from 'next/link'
 import style from '../../styles/index.module.css'
@@ -42,10 +42,7 @@ export default function Home(){
             <p>Nutuml提供confluence 插件。<a href="../css/nutuml-1.1.0.jar">下载</a></p>
         </div>
     </div>
-    <footer>
-        <p></p>
-        <p>&copy; 2020-2021 NutUml</p>
-    </footer>
+    <NutFoot />
 </div>
 <Script src="//unpkg.com/vue@2.6.14/dist/vue.min.js" onLoad={()=>{
         new Vue({
@@ -70,17 +67,5 @@ export default function Home(){
     }}></Script>
 <Script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></Script>
 <Script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></Script>
-
-<Script>
-    {`
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?381aeaab62c7738765d54c516d97ef83";
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
-    })();
-    `}
-</Script>
 </>)
 }
