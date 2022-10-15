@@ -1,16 +1,11 @@
-import Head from 'next/head'
+import NutHead from '../component/NutHead'
 import Script from 'next/script'
 import Link from 'next/link'
 
 export default function Home(){
   return (
     <>
-    <Head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>NutUml</title>
-    </Head>
+    <NutHead title="欢迎使用Nutuml" />
     <div id="app">
       <ul>
         <li><Link href="/zh"><a>中文</a></Link></li>
@@ -18,7 +13,7 @@ export default function Home(){
       </ul>
     </div>
     <Script>
-      {   ` var JsSrc =(navigator.language || navigator.browserLanguage).toLowerCase();
+    {   ` var JsSrc =(navigator.language || navigator.browserLanguage).toLowerCase();
           if(JsSrc.indexOf('zh')>=0)
           {
              location.href='zh/' 
