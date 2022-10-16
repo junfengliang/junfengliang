@@ -8,10 +8,9 @@
     <meta name="author" content="junfengliang">
     <title>登录Nutuml</title>
 <link href="../css/bootstrap.5.2.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="../js/bootstrap.min.js" ></script>
 
 <meta name="theme-color" content="#712cf9">
-
-
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -72,16 +71,16 @@
   <body class="text-center">
     
 <main class="form-signin w-100 m-auto">
-  <form>
+  <form id="myForm">
     <h1 class="h3 mb-3 fw-normal">请登录</h1>
 
     <div class="form-floating">
-      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-      <label for="floatingInput">邮箱</label>
+      <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+      <label for="email">邮箱</label>
     </div>
     <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-      <label for="floatingPassword">密码</label>
+      <input type="password" class="form-control" id="pwd" placeholder="Password" required>
+      <label for="pwd">密码</label>
     </div>
 
     <!--div class="checkbox mb-3">
@@ -95,13 +94,72 @@
             <a href="reg.html">注册</a>
         </div>
         <div class="col text-end">
-            <a href="#">找回密码</a>
+            <!--a href="#">找回密码</a-->
         </div>
       </div>
   </form>
+
+<!-- Modal -->
+<div class="modal fade" id="errModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">请注意</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="errMsg" class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </main>
 
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
 
-    
+<script>
+  $(function () {
+
+    // 找到所在标签元素
+    var $pwd=$('#pwd')
+    var $email=$('#email')
+    var $form=$('#myForm')
+    // 6.所有输入框验证通过再提交注册
+    $form.submit(function(){
+        
+        var url = '/api/user/login';
+        var data = {
+          email: $email.val(),
+          password: $pwd.val(),
+        };
+
+        fetch(url, {
+          method: 'POST', 
+          body: JSON.stringify(data),
+          headers: new Headers({
+            'Content-Type': 'application/json'
+          })
+        }).then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => {
+          console.log('result',response)
+          if(response.success){
+            console.log('success')
+            var token = response.data.token;
+            window.localStorage.setItem('token',token);
+            location.href = "/zh/index"
+          }else{
+            $('#errMsg').html(response.message);
+            const errModal = new bootstrap.Modal('#errModal');
+            errModal.show()
+          }
+        });
+        return false
+    })
+})
+</script>
   </body>
 </html>

@@ -32,7 +32,7 @@ export default function Home(){
             <p>也可以用--&gt;来表示虚线。</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
             <textarea className={style.area} placeholder="请输入内容" v-model="textarea"></textarea>
-            <p>更多的语法说明及示例，请参考<a href="sequence.html">时序图</a></p>
+            <p>更多的语法说明及示例，请参考<a href="/zh/sequence">时序图</a></p>
         </div>
         <div id="canvas" class="col-md-6 text-center bottom-align-text"></div>
     </div>

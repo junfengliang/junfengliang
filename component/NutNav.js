@@ -20,8 +20,8 @@ export default function NutHead({page}){
             <li className={'tool'==page ? 'active':''}><a href="/zh/tool">在线工具</a></li>
             <li><a target="_blank" href="https://github.com/junfengliang/nutuml">Github</a></li>
             <li><a href="my-diagram.html">我的图表</a></li>
-            <li><a href="login.html">登录</a></li>
-            <li><a href="reg.html">注册</a></li>
+            <li><a href="/zh/login.html">登录</a></li>
+            <li><a href="/zh/reg.html">注册</a></li>
         </ul>
         </div>
     </div>
