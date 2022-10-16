@@ -18,8 +18,9 @@ export default function NutHead({page}){
             <li className={'home'==page ? 'active':''}><a href="/zh/">主页</a></li>
             <li className={'sequence'==page ? 'active':''}><a href="/zh/sequence">时序图</a></li>
             <li className={'tool'==page ? 'active':''}><a href="/zh/tool">在线工具</a></li>
+            <li className={'diagram'==page ? 'active':''} ><a href="/zh/my-diagram">我的图表</a></li>
+
             <li><a target="_blank" href="https://github.com/junfengliang/nutuml">Github</a></li>
-            <li><a href="my-diagram.html">我的图表</a></li>
             <li><a href="/zh/login.html">登录</a></li>
             <li><a href="/zh/reg.html">注册</a></li>
         </ul>

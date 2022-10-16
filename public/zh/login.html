@@ -150,7 +150,7 @@
             console.log('success')
             var token = response.data.token;
             window.localStorage.setItem('token',token);
-            location.href = "/zh/index"
+            location.href = "/zh/my-diagram"
           }else{
             $('#errMsg').html(response.message);
             const errModal = new bootstrap.Modal('#errModal');
