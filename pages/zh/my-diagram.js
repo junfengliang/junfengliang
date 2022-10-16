@@ -62,7 +62,7 @@ export default function Diagram(){
                         });
                         //数据列
                         td(i,tr);
-                        var title = '<a href="' + 'detail.html?id=' + line.id + '">' + line.title + "</a>";
+                        var title = '<a href="' + 'detail?ts=' + line.ts + '">' + line.title + "</a>";
                         td(title,tr);
                         td(line.ts,tr);
                         tr.appendTo(table);
