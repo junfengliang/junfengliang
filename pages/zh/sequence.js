@@ -1,24 +1,17 @@
 import NutHead from '../../component/NutHead'
 import NutFoot from '../../component/NutFoot'
 import Script from 'next/script'
-import Link from 'next/link'
-import style from '../../styles/sequence.module.css'
 import NutNav from '../../component/NutNav'
+import style from '../../styles/sequence.module.css'
 
 export default function Sequence(){
     return (
 <>
     <NutHead title={'NutUml时序图'} />
-    <link href="//unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-    
     <Script src="../js/nutuml.js"></Script>
     <NutNav page="sequence" />
 <div id="app" class="container">
-  <div class="row text-right">
-    <button type="button" class="btn btn-link" onclick="location.href='../zh/sequence.html'">中文</button>
-    <button type="button" class="btn btn-link" onclick="location.href='../en/sequence.html'">English</button>
-  </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>简单示例</h4>
             <p>我们用-&gt;来表示参与者之间的消息传递， 不必显式地声明参与者。</p>
@@ -27,10 +20,10 @@ export default function Sequence(){
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
             <textarea style={{width:'100%', height:'60px'}} placeholder="请输入内容" v-model="textarea0"></textarea>
         </div>
-        <div id="canvas0" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas0" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row align-vertical-center">
+    <div class="row" style={{marginTop:20}} >
         <div class="col-md-6">
             <h4>声明参与者</h4>
             <p>你可以使用以下关键字来声明参与者：</p>
@@ -42,9 +35,9 @@ export default function Sequence(){
             <li>database</li>
             <li>collections</li>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'230px'}} placeholder="请输入内容" v-model="textarea1"></textarea>
+            <textarea style={{width:'100%', height:270}} placeholder="请输入内容" v-model="textarea1"></textarea>
         </div>
-        <div id="canvas1" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas1" align="center" class="col-md-6">
         </div>
     </div>
     <div class="row" style={{display: 'none'}}>
@@ -54,75 +47,75 @@ export default function Sequence(){
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
             <textarea style={{width:'100%', height:'200px'}} placeholder="请输入内容" v-model="textarea2"></textarea>
         </div>
-        <div id="canvas2" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas2" align="center" class="col-md-6">
         </div>
     </div>
     
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>在参与者中使用非字母符号</h4>
             <p>我们可以使用引号定义参与者，还可以用关键字 as 给参与者定义别名。</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'230px'}} placeholder="请输入内容" v-model="textarea3"></textarea>
+            <textarea style={{width:'100%', height:100}} placeholder="请输入内容" v-model="textarea3"></textarea>
         </div>
-        <div id="canvas3" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas3" align="center" class="col-md-6">
         </div>
     </div>
     
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>给自己发消息</h4>
             <p>参与者可以给自己发信息</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'200px'}} placeholder="请输入内容" v-model="textarea4"></textarea>
+            <textarea style={{width:'100%', height:100}} placeholder="请输入内容" v-model="textarea4"></textarea>
         </div>
-        <div id="canvas4" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas4" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>自动编号</h4>
             <p>我们可以通过autonumber请消息自动编号</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'200px'}} placeholder="请输入内容" v-model="textarea5"></textarea>
+            <textarea style={{width:'100%', height:100}} placeholder="请输入内容" v-model="textarea5"></textarea>
         </div>
-        <div id="canvas5" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas5" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>分隔符</h4>
             <p>我们可以通过 == 关键词来将你的图表分割成多个步骤。</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'250px'}} placeholder="请输入内容" v-model="textarea6"></textarea>
+            <textarea style={{width:'100%', height:200}} placeholder="请输入内容" v-model="textarea6"></textarea>
         </div>
-        <div id="canvas6" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas6" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>移除脚注</h4>
             <p>使用hide footbox关键字移除脚注。</p>
             <p>你可以试着修改下面文本框里的内容，然后查看右边图片的变化</p>
-            <textarea style={{width:'100%', height:'200px'}} placeholder="请输入内容" v-model="textarea7"></textarea>
+            <textarea style={{width:'100%', height:100}} placeholder="请输入内容" v-model="textarea7"></textarea>
         </div>
-        <div id="canvas7" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas7" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>页面标题,页眉,页脚</h4>
             <p>使用title关键词增加标题<br />
                 使用header关键词增加页眉<br />
                 使用footer关键词增加页脚</p>
             <p></p>
-            <textarea style={{width:'100%', height:'200px'}} placeholder="请输入内容" v-model="textarea8"></textarea>
+            <textarea style={{width:'100%', height:150}} placeholder="请输入内容" v-model="textarea8"></textarea>
         </div>
-        <div id="canvas8" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas8" align="center" class="col-md-6">
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>组合消息</h4>
             <p>可以通过以下关键词将组合消息：</p>
@@ -136,60 +129,59 @@ export default function Sequence(){
                 <li>group</li>
             </ul>
             <p>
-                后面紧跟着消息内容,<br />
-                可以在标头(header)添加需要显示的文字(group除外)。<br />
+                后面紧跟着消息内容,可以在标头(header)添加需要显示的文字(group除外)。<br />
                 关键词 end 用来结束分组。分组可以嵌套使用。
             </p>
-            <textarea style={{width:'100%', height:'310px'}} placeholder="请输入内容" v-model="textarea9"></textarea>
+            <textarea style={{width:'100%', height:370}} placeholder="请输入内容" v-model="textarea9"></textarea>
         </div>
-        <div id="canvas9" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas9" align="center" class="col-md-6">
         </div>
     </div>
    
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>给消息添加注释</h4>
             <p>我们可以通过在消息后面添加 note left 或者 note right 关键词来给消息添加注释。
                 也可以通过使用 end note 来添加多行注释。
             </p>
-            <textarea style={{width:'100%', height:'270px'}} placeholder="请输入内容" v-model="textarea10"></textarea>
+            <textarea style={{width:'100%', height:300}} placeholder="请输入内容" v-model="textarea10"></textarea>
         </div>
-        <div id="canvas10" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas10" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>其他的注释</h4>
             <p>可以使用note left of，note right of或note over在节点(participant)的相对位置放置注释。<br />
                 还可以通过修改背景色来高亮显示注释。<br />
                 以及使用关键字end note来添加多行注释。
             </p>
-            <textarea v-model="textarea11" style={{width:'100%', height:'280px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea11" style={{width:'100%', height:350}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas11" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas11" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>引用</h4>
             <p>我们可以在图中通过使用ref over关键词来实现引用。
             </p>
-            <textarea v-model="textarea12" style={{width:'100%', height:'230px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea12" style={{width:'100%', height:280}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas12" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas12" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>延迟</h4>
             <p>我们可以使用...来表示延迟，并且还可以给延迟添加注释。                。
             </p>
             <textarea v-model="textarea13" style={{width:'100%', height:'150px'}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas13" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas13" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>文本换行</h4>
             <p>我们可以手动通过 \n 来换行。<br />
@@ -197,20 +189,20 @@ export default function Sequence(){
             </p>
             <textarea v-model="textarea14" style={{width:'100%', height:'150px'}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas14" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas14" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>空间</h4>
             <p>我们可以通过 使用|||来增加空间。还可以使用数字指定增加的像素的数量。
             </p>
-            <textarea v-model="textarea15" style={{width:'100%', height:'280px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea15" style={{width:'100%', height:'250px'}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas15" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas15" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>生命线的激活与撤销</h4>
             <p>关键字activate和deactivate用来表示参与者的生命活动。<br />
@@ -218,32 +210,32 @@ export default function Sequence(){
                 activate和deactivate适用于以上情形。<br />
                 destroy表示一个参与者的生命线的终结。
             </p>
-            <textarea v-model="textarea16" style={{width:'100%', height:'280px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea16" style={{width:'100%', height:330}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas16" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas16" align="center" class="col-md-6">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <p>还可以使用嵌套的生命线，并且运行给生命线添加颜色。
             </p>
-            <textarea v-model="textarea17" style={{width:'100%', height:'300px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea17" style={{width:'100%', height:370}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas17" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas17" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>进入和发出消息</h4>
             <p>如果只想关注部分图示，你可以使用进入和发出箭头。<br />
                 使用方括号[和]表示图示的左、右两侧。
             </p>
-            <textarea v-model="textarea18" style={{width:'100%', height:'300px'}} placeholder="请输入内容"></textarea>
+            <textarea v-model="textarea18" style={{width:'100%', height:330}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas18" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas18" align="center" class="col-md-6">
         </div>
     </div>
-    <div class="row">
+    <div class="row" style={{marginTop:20}}>
         <div class="col-md-6">
             <h4>包裹参与者</h4>
             <p>可以使用box和end box画一个盒子将参与者包裹起来。<br />
@@ -251,7 +243,7 @@ export default function Sequence(){
             </p>
             <textarea v-model="textarea19" style={{width:'100%', height:'200px'}} placeholder="请输入内容"></textarea>
         </div>
-        <div id="canvas19" class="col-md-6 text-center bottom-align-text">
+        <div id="canvas19" align="center" class="col-md-6">
         </div>
     </div>
     <NutFoot />    
@@ -488,8 +480,7 @@ export default function Sequence(){
         },
         methods: {
             draw: function(canvas,text){
-                var nutuml = new NutUml(canvas);
-                nutuml.drawUml(text);
+                canvas.innerHTML = nutuml.render(text);
             }
         }
     }).$mount('#app')

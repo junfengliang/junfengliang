@@ -3,7 +3,6 @@ import NutFoot from '../../component/NutFoot'
 import Script from 'next/script'
 import NutNav from '../../component/NutNav'
 import { useState, useEffect } from 'react'
-import Nutuml from '../../component/nutuml'
 
 function getUrlParams(key) {
     var url = window.location.search.substr(1);
@@ -80,9 +79,8 @@ export default function Diagram(){
     return (
 <>
     <NutHead title={'我的图表-详情-NutUml'} />
-    <link href="//unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <NutNav page="diagram" />
-
+    <Script src='/js/nutuml.js'></Script>
     <div id="app" class="container">
         <form onSubmit={handleSubmit}>
         <div class="row">
@@ -95,7 +93,7 @@ export default function Diagram(){
                 <button style={{width: '40%'}} class="w-100 btn btn-lg btn-primary" type="submit">保存</button>
             </div>
             <div id="canvas" class="col-md-6 text-center bottom-align-text" dangerouslySetInnerHTML={{
-                 __html: content? Nutuml.render(content):''
+                 __html: (content && nutuml)?  nutuml.render(content):''
             }}>
             </div>
         </div>

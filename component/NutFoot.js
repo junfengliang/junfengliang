@@ -2,9 +2,8 @@ import Script from "next/script"
 export default function NutFoot(){
     return (
         <>
-        <footer>
-            <p></p>
-            <p>&copy; 2020-2021 NutUml</p>
+        <footer style={{textAlign: 'center'}}>
+            &copy; 2020-2022 NutUml
         </footer>
         <Script>
             {`
