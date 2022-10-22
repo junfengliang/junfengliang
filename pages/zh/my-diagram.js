@@ -2,8 +2,10 @@ import NutHead from '../../component/NutHead'
 import NutFoot from '../../component/NutFoot'
 import NutNav from '../../component/NutNav'
 import {Breadcrumb, Container,Row,Col, Button,Table} from 'react-bootstrap';
-import {get} from '../../global/request'
+import {get,post} from '../../global/request'
 import { useEffect, useState } from 'react';
+import { formatDateTime } from '../../global/util';
+import { addMessage } from '../../global/message';
 
 export default function Diagram(){
     const [arr,setArr] = useState([]);
@@ -14,6 +16,24 @@ export default function Diagram(){
             setArr(data.data)
         }
     }
+    async function remove(ts){
+        var msg = "确定要删除图表吗？"
+        if(!confirm(msg)){
+            return;
+        }
+        var url = "/api/nutuml/delete?ts=" + ts;
+        var data = await post(url);
+        if(data?.success){
+            addMessage('删除成功','消息');
+            var newArr = [];
+            arr.forEach((item)=>{
+                if(item.ts !== ts){
+                    newArr.push(item);
+                }
+            })
+            setArr(newArr);
+        }
+    }
     useEffect(()=>{
         loadData();
     },[]);
@@ -21,11 +41,12 @@ export default function Diagram(){
         <tr>
             <td>{index+1}</td>
             <td><a href={"detail?ts=" + item.ts}>{item.title}</a></td>
-            <td>{item.ts}</td>
+            <td>{formatDateTime(item.ts)}</td>
+            <td><Button onClick={()=>remove(item.ts)} variant="link">删除</Button></td>
         </tr>
     )
     if(arr.length==0){
-        lines = <tr><td align="center" colSpan={3}>暂无数据</td></tr>
+        lines = <tr><td align="center" colSpan={4}>暂无数据</td></tr>
     }
     return (
 <>
@@ -39,16 +60,17 @@ export default function Diagram(){
                 </Breadcrumb>
             </Col>
             <Col align="right">
-                <Button variant="primary">添加图表</Button>
+                <Button variant="primary" onClick={()=>location.href='/zh/detail'}>添加图表</Button>
             </Col>
         </Row>
 
         <Table striped bordered hover>
         <thead>
             <tr>
-                <th scope="col">#</th>
+                <th scope="col" width="50">#</th>
                 <th scope="col">标题</th>
-                <th scope="col">创建时间</th>
+                <th scope="col" width="200">创建时间</th>
+                <th scope="col" width="80">操作</th>
             </tr>
         </thead>
         <tbody>

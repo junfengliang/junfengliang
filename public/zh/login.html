@@ -136,6 +136,13 @@
           password: $pwd.val(),
         };
 
+        var name = data.email;
+
+        var off = name.indexOf('@');
+        if(off>0){
+          name = name.substr(0,off);
+        }
+
         fetch(url, {
           method: 'POST', 
           body: JSON.stringify(data),
@@ -150,6 +157,7 @@
             console.log('success')
             var token = response.data.token;
             window.localStorage.setItem('token',token);
+            window.sessionStorage.setItem('name',name);
             location.href = "/zh/my-diagram"
           }else{
             $('#errMsg').html(response.message);
