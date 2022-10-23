@@ -11,6 +11,12 @@ export default function NutHead({page}){
             setName(sessionStorage.getItem('name'));
         }
     },[])
+
+    function logout(){
+        sessionStorage.removeItem('name');
+        localStorage.removeItem('token');
+        setName(null);
+    }
     
     return (
         <Navbar bg="primary" variant="dark">
@@ -26,7 +32,13 @@ export default function NutHead({page}){
             <Nav.Link className={'diagram'==page ? 'active':''} href="/zh/my-diagram">我的图表</Nav.Link>
           </Nav>
             {
-                name ? (<Nav><Nav.Link href="/zh/login.html">{name}</Nav.Link></Nav>) : 
+                name ? (
+                <NavDropdown title={name} id="basic-nav-dropdown">
+                    <NavDropdown.Item href="#action/3.1">修改密码</NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item onClick={logout}>退出登录</NavDropdown.Item>
+                </NavDropdown>
+                ) : 
                 <Nav>
                     <Nav.Link href="/zh/login.html">登录</Nav.Link>
                     <Nav.Link href="/zh/reg.html">注册</Nav.Link>
