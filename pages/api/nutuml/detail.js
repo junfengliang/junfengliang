@@ -18,7 +18,7 @@ const client = new DynamoDBClient({
 export default async function handler(req, res) {
     const check = userCheck(req);
     if(!check.ok){
-        return res.json(check.json)
+        return res.status(401).json(check.json)
     }
     const uid = check.userId;
 

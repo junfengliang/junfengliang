@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
-export default function NutHead({page}){
+export default function NutNav({page}){
     const [name,setName] = useState();
     useEffect(()=>{
         if(typeof(sessionStorage)!=='undefined'){
@@ -34,7 +34,7 @@ export default function NutHead({page}){
             {
                 name ? (
                 <NavDropdown title={name} id="basic-nav-dropdown">
-                    <NavDropdown.Item href="#action/3.1">修改密码</NavDropdown.Item>
+                    <NavDropdown.Item href="/zh/edit-pass">修改密码</NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item onClick={logout}>退出登录</NavDropdown.Item>
                 </NavDropdown>
