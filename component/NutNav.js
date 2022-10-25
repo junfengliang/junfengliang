@@ -31,19 +31,23 @@ export default function NutNav({page}){
             <Nav.Link className={'tool'==page ? 'active':''} href="/zh/tool">在线工具</Nav.Link>
             <Nav.Link className={'diagram'==page ? 'active':''} href="/zh/my-diagram">我的图表</Nav.Link>
           </Nav>
-            {
-                name ? (
-                <NavDropdown title={name} id="basic-nav-dropdown">
-                    <NavDropdown.Item href="/zh/edit-pass">修改密码</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item onClick={logout}>退出登录</NavDropdown.Item>
-                </NavDropdown>
-                ) : 
-                <Nav>
-                    <Nav.Link href="/zh/login.html">登录</Nav.Link>
-                    <Nav.Link href="/zh/reg.html">注册</Nav.Link>
-                </Nav>
-            }
+      {
+          name ? (
+          <Nav>
+            <Nav.Link href="/en/">English</Nav.Link>
+            <NavDropdown title={name} id="basic-nav-dropdown">
+                <NavDropdown.Item href="/zh/edit-pass">修改密码</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={logout}>退出登录</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+          ) : 
+          <Nav>
+              <Nav.Link href="/en/">English</Nav.Link>
+              <Nav.Link href="/zh/login.html">登录</Nav.Link>
+              <Nav.Link href="/zh/reg.html">注册</Nav.Link>
+          </Nav>
+      }
         </Navbar.Collapse>
       </Container>
     </Navbar>
