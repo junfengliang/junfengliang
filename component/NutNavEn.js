@@ -27,7 +27,7 @@ export default function NutNavEn({page}){
           <Nav className="me-auto">
             <Nav.Link className={'home'==page ? 'active':''} href="/en/">Home</Nav.Link>
             <Nav.Link className={'sequence'==page ? 'active':''} href="/en/sequence">Sequence</Nav.Link>
-            {/*<Nav.Link className={'mind'==page ? 'active':''} href="/en/mind">Mindmap</Nav.Link>*/}
+            <Nav.Link className={'mind'==page ? 'active':''} href="/en/mind">Mindmap</Nav.Link>
             <Nav.Link className={'tool'==page ? 'active':''} href="/en/tool">Online Tool</Nav.Link>
           </Nav>
           <Nav>
