@@ -19,7 +19,7 @@ export default function NutNav({page}){
     }
     
     return (
-        <Navbar bg="primary" variant="dark">
+      <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
       <Container>
         <Navbar.Brand href="/">NutUml</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
