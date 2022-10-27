@@ -4,17 +4,25 @@ import NutNav from '../../component/NutNav'
 import {Breadcrumb, Container,Row,Col, Button,Table} from 'react-bootstrap';
 import {get,post} from '../../global/request'
 import { useEffect, useState } from 'react';
-import { formatDateTime } from '../../global/util';
+import { formatDateTime, isLogin } from '../../global/util';
 import { addMessage } from '../../global/message';
+import Loading from '../../component/Loading';
 
 export default function Diagram(){
     const [arr,setArr] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [login,setLogin] = useState(false);
+
     async function loadData(){
         var url = "/api/nutuml/list";
         var data = await get(url);
+        if(data){
+            setLogin(true)
+        }
         if(data && data.data){
             setArr(data.data)
         }
+        setLoading(false);
     }
     async function remove(ts){
         var msg = "确定要删除图表吗？"
@@ -38,7 +46,7 @@ export default function Diagram(){
         loadData();
     },[]);
     var lines = arr.map((item,index)=>
-        <tr>
+        <tr key={index}>
             <td>{index+1}</td>
             <td><a href={"detail?ts=" + item.ts}>{item.title}</a></td>
             <td>{formatDateTime(item.ts)}</td>
@@ -60,10 +68,14 @@ export default function Diagram(){
                 </Breadcrumb>
             </Col>
             <Col align="right">
-                <Button variant="primary" onClick={()=>location.href='/zh/detail'}>添加图表</Button>
+                { login ? 
+                    <Button variant="primary" onClick={()=>location.href='/zh/detail'}>添加图表</Button>
+                : ''
+                }
             </Col>
         </Row>
 
+        {loading? <Loading />:
         <Table striped bordered hover>
         <thead>
             <tr>
@@ -77,6 +89,7 @@ export default function Diagram(){
            {lines}
         </tbody>
         </Table>
+        }
         <NutFoot />
     </Container>
 </>)

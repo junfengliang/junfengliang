@@ -14,3 +14,7 @@ export function formatDateTime(timestamp) {
 function addZero(num) {
     return num < 10 ? '0' + num : num;
 }
+
+export function isLogin(){
+    return sessionStorage.getItem('token') !== undefined
+}

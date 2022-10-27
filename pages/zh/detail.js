@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Container,Row,Col,InputGroup,Form,Breadcrumb } from 'react-bootstrap'
 import {get,post} from '../../global/request'
 import { addMessage } from '../../global/message'
+import Loading from '../../component/Loading'
 
 function getUrlParams(key) {
     var url = window.location.search.substr(1);
@@ -26,6 +27,8 @@ export default function Diagram(){
     const [title,setTitle] = useState('');
     const [content, setContent] = useState();
     const [ts,setTs] = useState(0);
+    const [loading,setLoading] = useState(false);
+
     function titleChange(event){
         setTitle(event.target.value);
     }
@@ -56,12 +59,14 @@ export default function Diagram(){
           return;
       }
       setTs(pts)
+      setLoading(true)
       var url =  "/api/nutuml/detail?ts=" + pts;
       var res = await get(url);
       if(res?.success){
           setTitle(res.data?.title)
           setContent(res.data?.content)
       }
+      setLoading(false)
     }
     useEffect(() => {
         loadData();
@@ -80,26 +85,29 @@ export default function Diagram(){
                 </Breadcrumb>
             </Col>
       </Row>
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col md="6">
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">标题</InputGroup.Text>
-              <Form.Control value={title} onChange={titleChange} 
-                placeholder="请输入标题"
-                aria-label="标题"
-                aria-describedby="basic-addon1" 
-              />
-            </InputGroup>
-            <textarea value={content} onChange={contentChange} style={{marginTop:'10px', width:'100%', height:'400px'}} placeholder="请输入内容"></textarea>
-            <button style={{width: '40%'}} class="w-100 btn btn-lg btn-primary" type="submit">保存</button>
-          </Col>
-          <Col md="6" align="center" dangerouslySetInnerHTML={{
-                  __html: (content && nutuml)?  nutuml.render(content):''
-            }}>
-          </Col>
-        </Row>
-      </Form>
+
+      {loading? <Loading /> : 
+          <Form onSubmit={handleSubmit}>
+          <Row>
+            <Col md="6">
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1">标题</InputGroup.Text>
+                <Form.Control value={title} onChange={titleChange} 
+                  placeholder="请输入标题"
+                  aria-label="标题"
+                  aria-describedby="basic-addon1" 
+                />
+              </InputGroup>
+              <textarea value={content} onChange={contentChange} style={{marginTop:'10px', width:'100%', height:'400px'}} placeholder="请输入内容"></textarea>
+              <button style={{width: '40%'}} class="w-100 btn btn-lg btn-primary" type="submit">保存</button>
+            </Col>
+            <Col md="6" align="center" dangerouslySetInnerHTML={{
+                    __html: (content && nutuml)?  nutuml.render(content):''
+              }}>
+            </Col>
+          </Row>
+        </Form>
+      }
       <NutFoot />
     </Container>
 </>)
