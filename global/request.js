@@ -15,7 +15,7 @@ export function checkStatus(response) {
       sessionStorage.clear();
     }
     if(confirm('当前页面需要登录后才能操作，是否前往登录？')){
-      location.href = "/zh/login.html"
+      location.href = "/zh/login"
     }
   }
   if (!response) {

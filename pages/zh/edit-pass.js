@@ -35,6 +35,11 @@ export default function EditPass() {
          if (!values.oldPass) {
            errors.oldPass = '请输入密码';
          } 
+         if (!values.newPass) {
+            errors.newPass = '请输入新密码';
+        }else if(values.newPass.length<6){
+          errors.newPass = '至少输入6位新密码';
+        } 
          if(values.confirmPass!=='' && values.newPass !== values.confirmPass){
             errors.confirmPass = '两次输入的密码不一致！'
          }
@@ -45,7 +50,7 @@ export default function EditPass() {
         post(url,values).then((data)=>{
             if(data?.success){
                 if(confirm('密码修改成功，是否重新登录？')){
-                    location.href = '/zh/login.html'
+                    location.href = '/zh/login'
                 }
             }
         }).finally(()=>{
@@ -81,7 +86,7 @@ export default function EditPass() {
           onChange={handleChange}
           isInvalid={!!errors.newPass}/>
           <Form.Control.Feedback type="invalid">
-            请输入新密码
+          {errors.newPass}
           </Form.Control.Feedback>
         </Form.Group>
       </Row>
@@ -94,7 +99,7 @@ export default function EditPass() {
           onChange={handleChange}
           isInvalid={!!errors.confirmPass}/>
           <Form.Control.Feedback type="invalid">
-            两次输入的密码不一样
+          {errors.confirmPass}
           </Form.Control.Feedback>
         </Form.Group>
       </Row>

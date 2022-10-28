@@ -16,10 +16,11 @@ export default function NutNav({page}){
         sessionStorage.removeItem('name');
         localStorage.removeItem('token');
         setName(null);
+        location.href = '/zh/login'
     }
     
     return (
-      <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
+      <Navbar collapseOnSelect expand="md" bg="primary" variant="dark">
       <Container>
         <Navbar.Brand href="/">NutUml</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -44,8 +45,8 @@ export default function NutNav({page}){
           ) : 
           <Nav>
               <Nav.Link href="/en/">English</Nav.Link>
-              <Nav.Link href="/zh/login.html">登录</Nav.Link>
-              <Nav.Link href="/zh/reg.html">注册</Nav.Link>
+              <Nav.Link href="/zh/login">登录</Nav.Link>
+              <Nav.Link href="/zh/reg">注册</Nav.Link>
           </Nav>
       }
         </Navbar.Collapse>
