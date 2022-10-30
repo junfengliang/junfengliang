@@ -14,7 +14,7 @@ export default function NutNav({page}){
 
     function logout(){
         sessionStorage.removeItem('name');
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         setName(null);
         location.href = '/zh/login'
     }

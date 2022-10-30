@@ -14,6 +14,7 @@ export default function Diagram(){
     const [login,setLogin] = useState(false);
 
     async function loadData(){
+        
         var url = "/api/nutuml/list";
         var data = await get(url);
         if(data){
@@ -43,6 +44,12 @@ export default function Diagram(){
         }
     }
     useEffect(()=>{
+        if(!isLogin()){
+            console.log('not login')
+            location.href = "/zh/login"
+        }else{
+            console.log('login ok')
+        }
         loadData();
     },[]);
     var lines = arr.map((item,index)=>

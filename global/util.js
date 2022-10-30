@@ -16,5 +16,10 @@ function addZero(num) {
 }
 
 export function isLogin(){
-    return sessionStorage.getItem('token') !== undefined
+    let token =  sessionStorage.getItem('token')
+    console.log('token',token)
+    if(token){
+        return true
+    }
+    return false;
 }

@@ -28,7 +28,7 @@ export function checkStatus(response) {
 
 function getHeaderParams() {
     return {
-        token: localStorage.getItem('token')
+        token: sessionStorage.getItem('token')
     }
 }
 

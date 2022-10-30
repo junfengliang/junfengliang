@@ -30,7 +30,7 @@ export default function Login() {
         post(url,values).then((data)=>{
             if(data?.success){
               var token = data.data.token;
-              window.localStorage.setItem('token',token);
+              window.sessionStorage.setItem('token',token);
               window.sessionStorage.setItem('name',name);
               location.href = "/zh/my-diagram"
             }

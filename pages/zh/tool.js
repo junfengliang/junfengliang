@@ -2,9 +2,15 @@ import NutHead from '../../component/NutHead'
 import NutFoot from '../../component/NutFoot'
 import Script from 'next/script'
 import NutNav from '../../component/NutNav'
-import { Container } from 'react-bootstrap'
+import { Container,Alert } from 'react-bootstrap'
+import { isLogin } from '../../global/util'
+import { useEffect, useState } from 'react'
 
 export default function Sequence(){
+    const [login, setLogin] = useState(false)
+    useEffect(()=>{
+        setLogin(isLogin())
+    },[])
     return (
 <>
     <NutHead title={'NutUml在线工具'} />
@@ -15,6 +21,11 @@ export default function Sequence(){
         <div class="row">
             <div class="col-md-6">
                 <textarea style={{width:'100%', height:'360px'}} placeholder="请输入内容" v-model="textarea"></textarea>
+                {login? '':
+                 <Alert variant="primary">
+                    登录后，可以创建在线图表
+                 </Alert>
+                }
             </div>
             <div id="canvas" class="col-md-6" align="center">
             </div>
