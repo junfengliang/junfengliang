@@ -30,6 +30,7 @@ export default function NutNav({page}){
             <Nav.Link className={'sequence'==page ? 'active':''} href="/zh/sequence">时序图</Nav.Link>
             <Nav.Link className={'mind'==page ? 'active':''} href="/zh/mind">思维导图</Nav.Link>
             <Nav.Link className={'tool'==page ? 'active':''} href="/zh/tool">在线工具</Nav.Link>
+            <Nav.Link className={'text'==page ? 'active':''} href="/zh/text">文本工具</Nav.Link>
             <Nav.Link className={'diagram'==page ? 'active':''} href="/zh/my-diagram">我的图表</Nav.Link>
           </Nav>
       {
