@@ -29,6 +29,7 @@ export default function NutNavEn({page}){
             <Nav.Link className={'sequence'==page ? 'active':''} href="/en/sequence">Sequence</Nav.Link>
             <Nav.Link className={'mind'==page ? 'active':''} href="/en/mind">Mindmap</Nav.Link>
             <Nav.Link className={'tool'==page ? 'active':''} href="/en/tool">Online Tool</Nav.Link>
+            <Nav.Link href="https://tool.nutuml.com/">N tools</Nav.Link>
           </Nav>
           <Nav>
             <Nav.Link href="/zh/">中文</Nav.Link>

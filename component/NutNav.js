@@ -32,6 +32,7 @@ export default function NutNav({page}){
             <Nav.Link className={'tool'==page ? 'active':''} href="/zh/tool">在线工具</Nav.Link>
             <Nav.Link className={'text'==page ? 'active':''} href="/zh/text">文本工具</Nav.Link>
             <Nav.Link className={'diagram'==page ? 'active':''} href="/zh/my-diagram">我的图表</Nav.Link>
+            <Nav.Link href="https://tool.nutuml.com/zh-CN/">周周小工具</Nav.Link>
           </Nav>
       {
           name ? (
